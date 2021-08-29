@@ -17,7 +17,9 @@ namespace Quesar
 
         private Texture2D background;
         private Texture2D altbackground;
-        
+
+        public Button testButton;
+
         //compnents to making the testShip
         //private Ship testShip;
         //private int camMovementSpeed;
@@ -43,7 +45,7 @@ namespace Quesar
 
             uiStage = 0;
 
-
+            testButton = new Button(_graphics.GraphicsDevice, 0, 0, 100, 50,, true);
 
 
             base.Initialize();
