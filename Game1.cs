@@ -40,7 +40,7 @@ namespace Quesar
 
             _graphics.ApplyChanges();
 
-            uiStage = 1;
+            uiStage = 0;
 
 
 
@@ -99,8 +99,10 @@ namespace Quesar
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
 
-            _spriteBatch.Draw(getUiStage(), new Vector2(0,0),Color.White);
 
+            //This is the background and always the last thing on the screen, 
+            _spriteBatch.Draw(getUiStage(), new Vector2(0,0),Color.White);
+            _spriteBatch.FillRectangle(new RectangleF(_graphics.PreferredBackBufferWidth/2 - 100/2,_graphics.PreferredBackBufferHeight/2 - 50/2,100,50),Color.Red);
             _spriteBatch.End();
         }
 
