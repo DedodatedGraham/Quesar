@@ -15,8 +15,10 @@ namespace Quesar
         public int uiStage;
         public UiManager _uiManager;
 
+
         private Texture2D background;
         private Texture2D altbackground;
+        public Texture2D buttonv1;
 
         public Button testButton;
 
@@ -45,7 +47,7 @@ namespace Quesar
 
             uiStage = 0;
 
-            testButton = new Button(_graphics.GraphicsDevice, 0, 0, 100, 50,, true);
+            
 
 
             base.Initialize();
@@ -65,12 +67,14 @@ namespace Quesar
             
             background = Content.Load<Texture2D>("BackgroundV2");
             altbackground = Content.Load<Texture2D>("BackgroundV1");
-            
-           
+            buttonv1 = Content.Load<Texture2D>("ButtonV1");
+
+            testButton = new Button(_graphics.GraphicsDevice, 0, 0, 100, 50, buttonv1, true);
+
             // Inform Myra that external text input is available
             // So it stops translating Keys to chars
 
-            
+
 
         }
 
@@ -105,7 +109,8 @@ namespace Quesar
 
             //This is the background and always the last thing on the screen, 
             _spriteBatch.Draw(getUiStage(), new Vector2(0,0),Color.White);
-            
+            testButton.Draw();
+
             _spriteBatch.End();
         }
 
