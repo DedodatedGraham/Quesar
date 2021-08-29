@@ -13,10 +13,11 @@ namespace Quesar
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         public int uiStage;
-        
+        public UiManager _uiManager;
 
         private Texture2D background;
         private Texture2D altbackground;
+        
         //compnents to making the testShip
         //private Ship testShip;
         //private int camMovementSpeed;
@@ -102,7 +103,7 @@ namespace Quesar
 
             //This is the background and always the last thing on the screen, 
             _spriteBatch.Draw(getUiStage(), new Vector2(0,0),Color.White);
-            _spriteBatch.FillRectangle(new RectangleF(_graphics.PreferredBackBufferWidth/2 - 100/2,_graphics.PreferredBackBufferHeight/2 - 50/2,100,50),Color.Red);
+            
             _spriteBatch.End();
         }
 
