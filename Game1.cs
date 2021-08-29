@@ -40,7 +40,7 @@ namespace Quesar
 
             _graphics.ApplyChanges();
 
-            uiStage = 0;
+            uiStage = 1;
 
 
 
@@ -99,7 +99,7 @@ namespace Quesar
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
 
-            _spriteBatch.Draw(getUiStage, new Rectangle);
+            _spriteBatch.Draw(getUiStage(), new Vector2(0,0),Color.White);
 
             _spriteBatch.End();
         }
@@ -148,15 +148,15 @@ namespace Quesar
         {
             switch (uiStage)
             {
-                case 1:
+                case 0:
                     return background;
                     
-                case 2:
+                case 1:
                     return altbackground;
                    
                 
             }
-            return null;
+            return background;
 
 
 
