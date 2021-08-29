@@ -109,7 +109,8 @@ namespace Quesar
 
             //This is the background and always the last thing on the screen, 
             _spriteBatch.Draw(getUiStage(), new Vector2(0,0),Color.White);
-            testButton.Draw();
+            
+            testButton.Draw(_spriteBatch);
 
             _spriteBatch.End();
         }

@@ -39,20 +39,19 @@ namespace Quesar
 
 
             //creates the sprite batch for this Button
-            thisSprite = new SpriteBatch(_graphcis);
+            
         }
 
 
-        public void Draw()
+        public void Draw(SpriteBatch sp)
         {
-            thisSprite.Begin();
+            
 
             if (isActive)
             {
-                thisSprite.Draw(buttonSkin, new Rectangle(xCord, yCord, width, height), Color.Red);
+                sp.Draw(buttonSkin, new Rectangle(xCord, yCord, width, height), Color.White);
             }
 
-            thisSprite.End();
 
 
         }
