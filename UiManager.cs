@@ -29,26 +29,54 @@ namespace Quesar
             gdm = grdm;
             // Theres a few ways to do what i want to do but my idea is attach every menu to an array of buttons and assign a background to each aswell,
             // then in update logic we can sense if its clicekd and what happens if it is. so this is more of the design and layout part of the uimanager in which there will only be one 
-            //startMenu = startMenu + new Button(gd,,skin1);
+            //Im thinking just about 10 pixels worth of space between each button on the main menu?
+            startMenu = new Button[2];
+            startMenu[0] = new Button( gd, gdm.PreferredBackBufferHeight/2 - 50,gdm.PreferredBackBufferWidth/2 - 25,100,50,"Start",skin1,true);
+            startMenu[1] = new Button(gd, gdm.PreferredBackBufferHeight / 2 - 50, gdm.PreferredBackBufferWidth / 2 - 85, 100, 50, "Options", skin1, true);
+            
+        }
 
 
+        public void Draw(SpriteBatch sp, SpriteFont font, int UiStage)
+        {
+            if(UiStage == 0)
+            {
+                DrawStartMenu (sp,font);
+            }
+            if(UiStage == 1)
+            {
+                DrawOptionsMenu(sp,font);
+            }
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+        public void DrawStartMenu(SpriteBatch sp, SpriteFont font)
+        {
+            //sp.Begin();
+            int i = 0;
+            while (i < startMenu.Length)
+            {
+                startMenu[i].Draw(sp, font);
+                i++;
+            }
+            //sp.End();
+        }
+        public void DrawOptionsMenu(SpriteBatch sp, SpriteFont font)
+        {
 
         }
 
+
+
+
+
+
+
+        public void UpdateLogic()
+        {
+
+        }
+        
+        
 
 
 

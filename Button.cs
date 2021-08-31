@@ -46,13 +46,13 @@ namespace Quesar
 
         public void Draw(SpriteBatch sp, SpriteFont font)
         {
-            
+            Vector2 size = font.MeasureString(words);
 
             if (isActive)
             {
                 sp.Draw(buttonSkin, new Rectangle(xCord, yCord, width, height), Color.White);
                 //might need to fiddle with positioning of text later butthis will work for now
-                sp.DrawString(font,words,new Vector2(xCord,yCord),Color.Black);
+                sp.DrawString(font,words,new Vector2(xCord + (width/2 - size.X/2),yCord + (height/2 - size.Y/2)),Color.Black);
             }
 
 

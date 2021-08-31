@@ -8,7 +8,7 @@ namespace Quesar
     public class Game1 : Game
     {
         public Player thisPlayer;
-        public SpriteFont publicFont { get; set; }
+        public SpriteFont publicFont;
         
         
         private GraphicsDeviceManager _graphics;
@@ -47,7 +47,7 @@ namespace Quesar
             _graphics.ApplyChanges();
 
             uiStage = 0;
-
+            
             
 
 
@@ -69,9 +69,10 @@ namespace Quesar
             background = Content.Load<Texture2D>("BackgroundV2");
             altbackground = Content.Load<Texture2D>("BackgroundV1");
             buttonv1 = Content.Load<Texture2D>("ButtonV1");
-            //publicFont = Content.Load<SpriteFont>("Arial");
+            publicFont = Content.Load<SpriteFont>("Font");
 
-           
+            _uiManager = new UiManager(GraphicsDevice, buttonv1, _graphics);
+
 
             // Inform Myra that external text input is available
             // So it stops translating Keys to chars
@@ -110,8 +111,8 @@ namespace Quesar
 
 
             //This is the background and always the last thing on the screen, 
-            _spriteBatch.Draw(getUiStage(), new Vector2(0,0),Color.White);
-            
+            _spriteBatch.Draw(getUiStageBackground(), new Vector2(0, 0), Color.White);
+            _uiManager.Draw(_spriteBatch, publicFont, uiStage);
             //Heres the ui menu drawing
 
 
@@ -158,7 +159,7 @@ namespace Quesar
             return a;
         }
 
-        public Texture2D getUiStage()
+        public Texture2D getUiStageBackground()
         {
             switch (uiStage)
             {
