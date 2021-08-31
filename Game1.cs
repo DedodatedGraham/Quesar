@@ -83,7 +83,7 @@ namespace Quesar
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (uiStage == 3)
                 Exit();
 
             // TODO: Add your update logic here
@@ -93,10 +93,10 @@ namespace Quesar
             //zooom = 0.2f;
             //testShip.camera.Move(GetMovementDirection() * camMovementSpeed );
             //testShip.camera.ZoomIn(GetZoom() * zooom);
-            
-            
-            
 
+
+
+           uiStage = _uiManager.UpdateManager(gameTime, uiStage);
 
 
             base.Update(gameTime);

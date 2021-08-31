@@ -30,23 +30,25 @@ namespace Quesar
             // Theres a few ways to do what i want to do but my idea is attach every menu to an array of buttons and assign a background to each aswell,
             // then in update logic we can sense if its clicekd and what happens if it is. so this is more of the design and layout part of the uimanager in which there will only be one 
             //Im thinking just about 10 pixels worth of space between each button on the main menu?
-            startMenu = new Button[2];
-            startMenu[0] = new Button( gd, gdm.PreferredBackBufferHeight/2 - 50,gdm.PreferredBackBufferWidth/2 - 25,100,50,"Start",skin1,true);
-            startMenu[1] = new Button(gd, gdm.PreferredBackBufferHeight / 2 - 50, gdm.PreferredBackBufferWidth / 2 - 85, 100, 50, "Options", skin1, true);
+            startMenu = new Button[3];
+            startMenu[0] = new Button( gd, (gdm.PreferredBackBufferWidth/2) - 50,(gdm.PreferredBackBufferHeight/2) - 85,100,50,"Start",skin1,true);
+            startMenu[1] = new Button(gd, (gdm.PreferredBackBufferWidth/2) - 50, (gdm.PreferredBackBufferHeight/2) - 25, 100, 50, "Options", skin1, true);
+            startMenu[2] = new Button(gd, (gdm.PreferredBackBufferWidth / 2) - 50, (gdm.PreferredBackBufferHeight / 2) + 35, 100, 50, "Exit Game", skin1, true);
             
         }
 
 
-        public void Draw(SpriteBatch sp, SpriteFont font, int UiStage)
+        public void Draw(SpriteBatch sp, SpriteFont font, int curUiStage)
         {
-            if(UiStage == 0)
+            if(curUiStage == 0)
             {
                 DrawStartMenu (sp,font);
             }
-            if(UiStage == 1)
+            if(curUiStage == 1)
             {
                 DrawOptionsMenu(sp,font);
             }
+
         }
 
         public void DrawStartMenu(SpriteBatch sp, SpriteFont font)
@@ -65,12 +67,39 @@ namespace Quesar
 
         }
 
+        
+        
+        
+        
+        
+        public int UpdateManager(GameTime gameTime,int curUiStage)
+        {
+            if(curUiStage == 0)
+            {
+                if (startMenu[0].isClicked())
+                {
+                    //Goes to base Background
+                    return 1;
+                }
+                if (startMenu[1].isClicked())
+                {
+                    //Goes to option menu
+                    return 2;
+                }
+                if (startMenu[2].isClicked())
+                {
+                    return 3;
+                }
+            }
+            
+            return curUiStage;
+            
 
 
+            //Returns base Value if nothing is doable
+            
 
-
-
-
+        }
         public void UpdateLogic()
         {
 
