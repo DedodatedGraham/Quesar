@@ -18,6 +18,7 @@ namespace Quesar
         public GraphicsDeviceManager gdm;
 
         public Button[] startMenu;
+        public Button[] optionMenu;
         
 
         //The Constructor more serves for loading& initializing all the ui menus to be ready & defined when needed.
@@ -35,6 +36,9 @@ namespace Quesar
             startMenu[1] = new Button(gd, (gdm.PreferredBackBufferWidth/2) - 50, (gdm.PreferredBackBufferHeight/2) - 25, 100, 50, "Options", skin1, true);
             startMenu[2] = new Button(gd, (gdm.PreferredBackBufferWidth / 2) - 50, (gdm.PreferredBackBufferHeight / 2) + 35, 100, 50, "Exit Game", skin1, true);
             
+            //Option buttons 
+            optionMenu = new Button[1];
+
         }
 
 
@@ -44,27 +48,35 @@ namespace Quesar
             {
                 DrawStartMenu (sp,font);
             }
-            if(curUiStage == 1)
+            if(curUiStage == 2)
             {
                 DrawOptionsMenu(sp,font);
+            }
+
+            if(curUiStage == 11)
+            {
+                
             }
 
         }
 
         public void DrawStartMenu(SpriteBatch sp, SpriteFont font)
         {
-            //sp.Begin();
             int i = 0;
             while (i < startMenu.Length)
             {
                 startMenu[i].Draw(sp, font);
                 i++;
             }
-            //sp.End();
         }
         public void DrawOptionsMenu(SpriteBatch sp, SpriteFont font)
         {
-
+            int i = 0;
+            while (i < optionMenu.Length)
+            {
+                optionMenu[i].Draw(sp, font);
+                i++;
+            }
         }
 
         
@@ -88,9 +100,17 @@ namespace Quesar
                 }
                 if (startMenu[2].isClicked())
                 {
+                    //Exits
                     return 3;
                 }
             }
+            if(curUiStage == 1)
+            {
+             //Character Selection Menu
+             
+                
+            }
+
             
             return curUiStage;
             

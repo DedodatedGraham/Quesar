@@ -168,6 +168,9 @@ namespace Quesar
 
                 case 1:
                     return altbackground;
+                
+                case 2:
+                    return altbackground;
 
 
             }
