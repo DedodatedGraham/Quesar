@@ -29,7 +29,7 @@ namespace Quesar
             gdm = grdm;
             // Theres a few ways to do what i want to do but my idea is attach every menu to an array of buttons and assign a background to each aswell,
             // then in update logic we can sense if its clicekd and what happens if it is. so this is more of the design and layout part of the uimanager in which there will only be one 
-            startMenu = startMenu + new Button(gd,,skin1);
+            //startMenu = startMenu + new Button(gd,,skin1);
 
 
 

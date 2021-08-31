@@ -61,7 +61,7 @@ namespace Quesar
 
         public bool isClicked()
         {
-            if ((Mouse.GetState().LeftButton == ButtonState.Pressed) && (isOver()))
+            if ((Mouse.GetState().LeftButton == ButtonState.Pressed) && (isHovering()))
             {
                 return true;
             }
@@ -71,7 +71,7 @@ namespace Quesar
 
         }
 
-        public bool isOver()
+        public bool isHovering()
         {
             if(Mouse.GetState().X > xCord && Mouse.GetState().X < (xCord + width) && Mouse.GetState().Y > yCord && Mouse.GetState().Y < (yCord + height))
             {

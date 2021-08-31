@@ -69,7 +69,7 @@ namespace Quesar
             background = Content.Load<Texture2D>("BackgroundV2");
             altbackground = Content.Load<Texture2D>("BackgroundV1");
             buttonv1 = Content.Load<Texture2D>("ButtonV1");
-            publicFont = Content.Load<SpriteFont>("Arial");
+            //publicFont = Content.Load<SpriteFont>("Arial");
 
            
 
