@@ -8,7 +8,7 @@ using MonoGame.Extended;
 
 namespace Quesar
 {
-    public class Button
+     public class Button : UiElement
     {
         public int xCord { get; set; }
         public int yCord { get; set; }
@@ -44,7 +44,7 @@ namespace Quesar
         }
 
 
-        public void Draw(SpriteBatch sp, SpriteFont font)
+         public override void Draw(SpriteBatch sp, SpriteFont font)
         {
             Vector2 size = font.MeasureString(words);
 

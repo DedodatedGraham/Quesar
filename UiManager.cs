@@ -19,6 +19,7 @@ namespace Quesar
 
         public Button[] startMenu;
         public Button[] optionMenu;
+        public Button[] charCreateMenu;
         
 
         //The Constructor more serves for loading& initializing all the ui menus to be ready & defined when needed.
@@ -28,16 +29,21 @@ namespace Quesar
             gd = graph;
             skin1 = sk1;
             gdm = grdm;
-            // Theres a few ways to do what i want to do but my idea is attach every menu to an array of buttons and assign a background to each aswell,
-            // then in update logic we can sense if its clicekd and what happens if it is. so this is more of the design and layout part of the uimanager in which there will only be one 
-            //Im thinking just about 10 pixels worth of space between each button on the main menu?
-            startMenu = new Button[3];
-            startMenu[0] = new Button( gd, (gdm.PreferredBackBufferWidth/2) - 50,(gdm.PreferredBackBufferHeight/2) - 85,100,50,"Start",skin1,true);
-            startMenu[1] = new Button(gd, (gdm.PreferredBackBufferWidth/2) - 50, (gdm.PreferredBackBufferHeight/2) - 25, 100, 50, "Options", skin1, true);
-            startMenu[2] = new Button(gd, (gdm.PreferredBackBufferWidth / 2) - 50, (gdm.PreferredBackBufferHeight / 2) + 35, 100, 50, "Exit Game", skin1, true);
+                // Theres a few ways to do what i want to do but my idea is attach every menu to an array of buttons and assign a background to each aswell,
+                // then in update logic we can sense if its clicekd and what happens if it is. so this is more of the design and layout part of the uimanager in which there will only be one 
+                //Im thinking just about 10 pixels worth of space between each button on the main menu?
+                startMenu = new Button[3];
+                startMenu[0] = new Button( gd, (gdm.PreferredBackBufferWidth/2) - 50,(gdm.PreferredBackBufferHeight/2) - 85,100,50,"Start",skin1,true);
+                startMenu[1] = new Button(gd, (gdm.PreferredBackBufferWidth/2) - 50, (gdm.PreferredBackBufferHeight/2) - 25, 100, 50, "Options", skin1, true);
+                startMenu[2] = new Button(gd, (gdm.PreferredBackBufferWidth / 2) - 50, (gdm.PreferredBackBufferHeight / 2) + 35, 100, 50, "Exit Game", skin1, true);
             
-            //Option buttons 
-            optionMenu = new Button[1];
+                //Option buttons 
+                optionMenu = new Button[1];
+
+
+                //CreateChar 
+                //charCreateMenu = new Button[];
+                
 
         }
 
@@ -106,9 +112,9 @@ namespace Quesar
             }
             if(curUiStage == 1)
             {
-             //Character Selection Menu
-             
-                
+                //Character Selection Menu
+
+                return 11;
             }
 
             
