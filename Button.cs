@@ -18,7 +18,7 @@ namespace Quesar
         public string words { get; set; }
 
         //for determining if the button is on screen
-        public bool isActive { get; set; }
+        public override bool isActive { get; set; }
 
         public GraphicsDevice _graphcis;
         public Texture2D buttonSkin { get; set; }

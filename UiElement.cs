@@ -10,7 +10,8 @@ namespace Quesar
 {
     abstract public class UiElement
     {
-
+        
+        public abstract bool isActive { get; set; }
         public abstract void Draw(SpriteBatch sb,SpriteFont sf);
 
         public abstract bool isClicked();

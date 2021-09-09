@@ -42,8 +42,8 @@ namespace Quesar
 
 
                 //CreateChar 
-                //charCreateMenu = new Button[];
-                
+                charCreateMenu = new UiElement[1];
+                charCreateMenu[0] = new TextBox(gd, (gdm.PreferredBackBufferWidth/2)-100,(gdm.PreferredBackBufferHeight/2) - 85,200,50,"Name:",skin1,true);
 
         }
 
@@ -61,7 +61,7 @@ namespace Quesar
 
             if(curUiStage == 11)
             {
-                
+                DrawCharCreate(sp,font);
             }
 
         }
@@ -85,6 +85,15 @@ namespace Quesar
             }
         }
 
+        public void DrawCharCreate(SpriteBatch sp, SpriteFont font)
+        {
+            int i = 0;
+            while (i < charCreateMenu.Length)
+            {
+                charCreateMenu[i].Draw(sp, font);
+                i++;
+            }
+        }
         
         
         
@@ -117,6 +126,16 @@ namespace Quesar
                 return 11;
             }
 
+
+
+            if(curUiStage == 11)
+            {
+                if (charCreateMenu[0].isClicked())
+                {
+                    //charCreateMenu[0].
+                }
+
+            }
             
             return curUiStage;
             
