@@ -13,6 +13,8 @@ namespace Quesar
 
         public abstract void Draw(SpriteBatch sb,SpriteFont sf);
 
+        public abstract bool isClicked();
+
 
 
     }

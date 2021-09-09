@@ -59,7 +59,7 @@ namespace Quesar
 
         }
 
-        public bool isClicked()
+        public override bool isClicked()
         {
             if ((Mouse.GetState().LeftButton == ButtonState.Pressed) && (isHovering()))
             {
