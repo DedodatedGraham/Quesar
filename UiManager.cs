@@ -132,7 +132,7 @@ namespace Quesar
             {
                 if (charCreateMenu[0].isClicked())
                 {
-                    //charCreateMenu[0].
+                    ((TextBox)charCreateMenu[0]).isTyping = true;
                 }
 
             }
