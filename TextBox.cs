@@ -39,6 +39,8 @@ namespace Quesar
 
             words = word;
 
+            isTyping = false;
+
 
 
         }
@@ -54,6 +56,9 @@ namespace Quesar
                 r.Width = (8 / 10) * width;
                 r.Height = (35 / 100) * height;
 
+
+                typed = "test";
+
                 Vector2 size = font.MeasureString(words);
 
                 sp.Draw(buttonSkin, new Rectangle(xCord, yCord, width, height), Color.White);
@@ -61,9 +66,11 @@ namespace Quesar
                 sp.DrawString(font, words, new Vector2(xCord + (width / 2 - size.X / 2), yCord + (height / 10)), Color.Black);
                 if (isTyping)
                 {
-                    typed = "test";
-                    sp.DrawString(font, typed, new Vector2(xCord + (width / 2 - size.X / 2), yCord + (height * ( 55/ 100 ) + size.Y)), Color.Black);
+                    typed = "works";
+                   
+
                 }
+                sp.DrawString(font, typed, new Vector2(xCord + (width / 2 - size.X / 2), yCord + (height * (55 / 100) + size.Y)), Color.Black);
 
 
 

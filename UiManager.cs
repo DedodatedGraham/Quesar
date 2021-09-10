@@ -106,24 +106,19 @@ namespace Quesar
                 if (startMenu[0].isClicked())
                 {
                     //Goes to base Background
-                    return 1;
+                    
+                    return 11;
                 }
                 if (startMenu[1].isClicked())
                 {
                     //Goes to option menu
-                    return 2;
+                    return 21;
                 }
                 if (startMenu[2].isClicked())
                 {
                     //Exits
-                    return 3;
+                    return 31;
                 }
-            }
-            if(curUiStage == 1)
-            {
-                //Character Selection Menu
-
-                return 11;
             }
 
 
@@ -133,6 +128,13 @@ namespace Quesar
                 if (charCreateMenu[0].isClicked())
                 {
                     ((TextBox)charCreateMenu[0]).isTyping = true;
+                }
+                else if(((TextBox)charCreateMenu[0]).isTyping == true)
+                {
+                    if (Keyboard.GetState().IsKeyDown(Keys.Enter) || ((TextBox)charCreateMenu[0]).isClicked())
+                    {
+                        ((TextBox)charCreateMenu[0]).isTyping = false;
+                    }
                 }
 
             }
