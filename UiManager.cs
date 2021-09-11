@@ -50,6 +50,7 @@ namespace Quesar
 
         public void Draw(SpriteBatch sp, SpriteFont font, int curUiStage)
         {
+            
             if(curUiStage == 0)
             {
                 DrawStartMenu (sp,font);
@@ -101,6 +102,7 @@ namespace Quesar
         
         public int UpdateManager(GameTime gameTime,int curUiStage)
         {
+
             if(curUiStage == 0)
             {
                 if (startMenu[0].isClicked())
@@ -112,11 +114,13 @@ namespace Quesar
                 if (startMenu[1].isClicked())
                 {
                     //Goes to option menu
+
                     return 21;
                 }
                 if (startMenu[2].isClicked())
                 {
                     //Exits
+                    
                     return 31;
                 }
             }
@@ -152,6 +156,7 @@ namespace Quesar
 
         }
         
+
         
 
 
@@ -163,4 +168,6 @@ namespace Quesar
 
 
     }
+
+   
 }
