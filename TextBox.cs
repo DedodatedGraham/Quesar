@@ -15,6 +15,8 @@ namespace Quesar
         public int width { get; set; }
         public int height { get; set; }
 
+        public int maxLength { get; set; }
+
         public string words { get; set; }
         public string typed { get; set; }
 
@@ -25,12 +27,14 @@ namespace Quesar
         public GraphicsDevice _graphcis;
         public Texture2D buttonSkin { get; set; }
 
-        public TextBox(GraphicsDevice gd, int x, int y, int w, int h,string word,Texture2D skin, bool isA)
+        public TextBox(GraphicsDevice gd, int x, int y, int w, int h,int ml,string word,Texture2D skin, bool isA)
         {
             xCord = x;
             yCord = y;
             width = w;
             height = h;
+
+            maxLength = ml;
 
             isActive = isA;
 
@@ -38,7 +42,7 @@ namespace Quesar
             _graphcis = gd;
 
             words = word;
-
+            typed = "test";
             isTyping = false;
 
 
@@ -57,20 +61,16 @@ namespace Quesar
                 r.Height = (35 / 100) * height;
 
 
-                typed = "test";
+                
 
                 Vector2 size = font.MeasureString(words);
+                Vector2 size2 = font.MeasureString(typed);
 
                 sp.Draw(buttonSkin, new Rectangle(xCord, yCord, width, height), Color.White);
                 sp.DrawRectangle(r, Color.White);
                 sp.DrawString(font, words, new Vector2(xCord + (width / 2 - size.X / 2), yCord + (height / 10)), Color.Black);
-                if (isTyping)
-                {
-                    typed = "works";
-                   
-
-                }
-                sp.DrawString(font, typed, new Vector2(xCord + (width / 2 - size.X / 2), yCord + (height * (55 / 100) + size.Y)), Color.Black);
+             
+                sp.DrawString(font, typed, new Vector2(xCord + (width / 2 - size2.X / 2), yCord + (height * (55 / 100) + size2.Y)), Color.Black);
 
 
 
