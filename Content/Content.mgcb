@@ -49,6 +49,18 @@
 /processorParam:TextureFormat=Color
 /build:ButtonV1.png
 
+#begin CharacterDisplayBox300x300 copy.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CharacterDisplayBox300x300 copy.png
+
 #begin DefaultCharV1.png
 /importer:TextureImporter
 /processor:TextureProcessor

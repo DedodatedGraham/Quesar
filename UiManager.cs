@@ -57,8 +57,8 @@ namespace Quesar
 
                 //CreateChar 
                 charCreateMenu = new UiElement[1];
-                charCreateMenu[0] = new TextBox(gd, (gdm.PreferredBackBufferWidth/2)-100,(gdm.PreferredBackBufferHeight/2) - 85,200,50,10,"Name:",skin1,true);
-
+                charCreateMenu[0] = new TextBox(gd, (gdm.PreferredBackBufferWidth/2)-100,(gdm.PreferredBackBufferHeight/2) - 85,200,50,10,"Name:",skin1,false);
+                //charCreateMenu[1] = new ;
         }
 
 
@@ -86,8 +86,13 @@ namespace Quesar
             int i = 0;
             while (i < startMenu.Length)
             {
+                startMenu[i].isActive = true;
                 startMenu[i].Draw(sp, font);
                 i++;
+            }
+            for(int j = 0; j > startMenu.Length; j++)
+            {
+                startMenu[j].isActive = false;
             }
         }
         public void DrawOptionsMenu(SpriteBatch sp, SpriteFont font)
@@ -95,8 +100,13 @@ namespace Quesar
             int i = 0;
             while (i < optionMenu.Length)
             {
+                optionMenu[i].isActive = true;
                 optionMenu[i].Draw(sp, font);
                 i++;
+            }
+            for (int j = 0; j > optionMenu.Length; j++)
+            {
+                optionMenu[j].isActive = false;
             }
         }
 
@@ -105,8 +115,13 @@ namespace Quesar
             int i = 0;
             while (i < charCreateMenu.Length)
             {
+                charCreateMenu[i].isActive = true;
                 charCreateMenu[i].Draw(sp, font);
                 i++;
+            }
+            for (int j = 0; j > charCreateMenu.Length; j++)
+            {
+                charCreateMenu[j].isActive = false;
             }
         }
         

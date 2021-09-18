@@ -71,6 +71,7 @@ namespace Quesar
             buttonv1 = Content.Load<Texture2D>("ButtonV1");
             publicFont = Content.Load<SpriteFont>("Font");
 
+
             _uiManager = new UiManager(GraphicsDevice, buttonv1, _graphics);
 
 
