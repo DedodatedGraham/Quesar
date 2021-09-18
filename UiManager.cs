@@ -53,7 +53,7 @@ namespace Quesar
             
                 //Option buttons 
                 optionMenu = new Button[1];
-
+                
 
                 //CreateChar 
                 charCreateMenu = new UiElement[1];
@@ -148,7 +148,7 @@ namespace Quesar
                 }
                 else if(((TextBox)charCreateMenu[0]).isTyping == true)
                 {
-                    if (Keyboard.GetState().IsKeyDown(Keys.Enter) || ((TextBox)charCreateMenu[0]).isClicked())
+                    if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (Mouse.GetState().LeftButton == ButtonState.Pressed))
                     {
                         ((TextBox)charCreateMenu[0]).isTyping = false;
                     }

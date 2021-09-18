@@ -71,6 +71,7 @@ namespace Quesar
                 sp.DrawString(font, words, new Vector2(xCord + (width / 2 - size.X / 2), yCord + (height / 10)), Color.Black);
              
                 sp.DrawString(font, typed, new Vector2(xCord + (width / 2 - size2.X / 2), yCord + (height * (55 / 100) + size2.Y)), Color.Black);
+                
 
 
 
