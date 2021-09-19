@@ -20,6 +20,7 @@ namespace Quesar
         private Texture2D background;
         private Texture2D altbackground;
         public Texture2D buttonv1;
+        public Texture2D charDisplayBox;
 
         
 
@@ -70,9 +71,9 @@ namespace Quesar
             altbackground = Content.Load<Texture2D>("BackgroundV1");
             buttonv1 = Content.Load<Texture2D>("ButtonV1");
             publicFont = Content.Load<SpriteFont>("Font");
+            charDisplayBox = Content.Load<Texture2D>("CharacterDisplayBox");
 
-
-            _uiManager = new UiManager(GraphicsDevice, buttonv1, _graphics);
+            _uiManager = new UiManager(GraphicsDevice, buttonv1,charDisplayBox, _graphics);
 
 
             // Inform Myra that external text input is available

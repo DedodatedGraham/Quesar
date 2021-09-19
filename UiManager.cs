@@ -16,6 +16,7 @@ namespace Quesar
 
         public GraphicsDevice gd;
         public Texture2D skin1;
+        public Texture2D charBox;
         public GraphicsDeviceManager gdm;
         
         public string currentdown;
@@ -32,11 +33,12 @@ namespace Quesar
         
 
         //The Constructor more serves for loading& initializing all the ui menus to be ready & defined when needed.
-        public UiManager(GraphicsDevice graph,Texture2D sk1,GraphicsDeviceManager grdm)
+        public UiManager(GraphicsDevice graph,Texture2D sk1,Texture2D cb,GraphicsDeviceManager grdm)
         {
 
             gd = graph;
             skin1 = sk1;
+            charBox = cb;
             gdm = grdm;
 
             currentdown = "";
@@ -56,9 +58,9 @@ namespace Quesar
                 
 
                 //CreateChar 
-                charCreateMenu = new UiElement[1];
+                charCreateMenu = new UiElement[2];
                 charCreateMenu[0] = new TextBox(gd, (gdm.PreferredBackBufferWidth/2)-100,(gdm.PreferredBackBufferHeight/2) - 85,200,50,10,"Name:",skin1,false);
-                //charCreateMenu[1] = new ;
+                charCreateMenu[1] = new PlayerBox(gd,(gdm.PreferredBackBufferWidth/2) - 150,(gdm.PreferredBackBufferHeight/2) -85 -10 - 300,300,300,charBox,false);
         }
 
 

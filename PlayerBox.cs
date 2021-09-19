@@ -36,7 +36,7 @@ namespace Quesar
         {
             if (isActive)
             {
-
+                sb.Draw(BackSkin, new Rectangle(xCord, yCord, width, height),Color.White);
             }
 
 

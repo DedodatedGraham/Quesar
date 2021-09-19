@@ -49,7 +49,7 @@
 /processorParam:TextureFormat=Color
 /build:ButtonV1.png
 
-#begin CharacterDisplayBox300x300 copy.png
+#begin CharacterDisplayBox.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -59,7 +59,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:CharacterDisplayBox300x300 copy.png
+/build:CharacterDisplayBox.png
 
 #begin DefaultCharV1.png
 /importer:TextureImporter
