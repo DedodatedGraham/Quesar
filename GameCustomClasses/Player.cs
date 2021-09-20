@@ -36,7 +36,7 @@ namespace Quesar
         public GraphicsDevice graphicsDevice { get; set; }
 
 
-        public Player(GraphicsDevice gd, ContentManager con,string newname)
+        public Player(GraphicsDevice gd,Texture2D con,string newname)
         {
             graphicsDevice = gd;
             name = newname;
@@ -44,7 +44,7 @@ namespace Quesar
             exp = 0;
             ships = null;
             maxShip = 1;
-            skin = con.Load<Texture2D>("DefaultCharV1");
+            skin = con;
             cam = new OrthographicCamera(graphicsDevice);
         }
 

@@ -9,6 +9,8 @@ namespace Quesar
     {
         public Player thisPlayer;
         public SpriteFont publicFont;
+
+        public bool gameRun;
         
         
         private GraphicsDeviceManager _graphics;
@@ -21,7 +23,7 @@ namespace Quesar
         private Texture2D altbackground;
         public Texture2D buttonv1;
         public Texture2D charDisplayBox;
-
+        public Texture2D defaulSkin;
         
 
         //compnents to making the testShip
@@ -72,8 +74,9 @@ namespace Quesar
             buttonv1 = Content.Load<Texture2D>("ButtonV1");
             publicFont = Content.Load<SpriteFont>("Font");
             charDisplayBox = Content.Load<Texture2D>("CharacterDisplayBox");
+            defaulSkin = Content.Load<Texture2D>("DefaultCharV1");
 
-            _uiManager = new UiManager(GraphicsDevice, buttonv1,charDisplayBox, _graphics);
+            _uiManager = new UiManager(GraphicsDevice, buttonv1,charDisplayBox, _graphics,defaulSkin);
 
 
             // Inform Myra that external text input is available
@@ -98,7 +101,31 @@ namespace Quesar
 
 
 
-           uiStage = _uiManager.UpdateManager(gameTime, uiStage);
+           switch(_uiManager.UpdateManager(gameTime, uiStage))
+            {
+                case 0:
+                    uiStage = 0;
+                    break;
+                case 1:
+                    uiStage = 1;
+                    break;
+                case 11:
+                    uiStage = 11;
+                    break;
+                case 111:
+                    gameRun = true;
+                    thisPlayer = _uiManager.outputNewPlayer;
+                    break;
+
+                case 2:
+                    uiStage = 2;
+                    break;
+
+                case 3:
+                    uiStage = 3;
+                    break;
+
+            }
 
 
             base.Update(gameTime);
@@ -107,10 +134,10 @@ namespace Quesar
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.White);
-
+            
             // TODO: Add your drawing code here
-            _spriteBatch.Begin();
-
+            _spriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointWrap);
+            
 
             //This is the background and always the last thing on the screen, 
             _spriteBatch.Draw(getUiStageBackground(), new Vector2(0, 0), Color.White);

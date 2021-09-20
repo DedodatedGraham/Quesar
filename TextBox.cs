@@ -66,12 +66,15 @@ namespace Quesar
                 Vector2 size = font.MeasureString(words);
                 Vector2 size2 = font.MeasureString(typed);
 
+
                 sp.Draw(buttonSkin, new Rectangle(xCord, yCord, width, height), Color.White);
                 sp.DrawRectangle(r, Color.White);
                 sp.DrawString(font, words, new Vector2(xCord + (width / 2 - size.X / 2), yCord + (height / 10)), Color.Black);
-             
+
+
                 sp.DrawString(font, typed, new Vector2(xCord + (width / 2 - size2.X / 2), yCord + (height * (55 / 100) + size2.Y)), Color.Black);
-                
+
+
 
 
 

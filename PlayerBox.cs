@@ -20,23 +20,27 @@ namespace Quesar
 
         public GraphicsDevice _graphcis;
         public Texture2D BackSkin { get; set; }
+        public Texture2D playerSkin { get; set; }
 
-        public PlayerBox(GraphicsDevice gd, int x, int y, int w, int h, Texture2D skin, bool isA)
+        public PlayerBox(GraphicsDevice gd, int x, int y, int w, int h, Texture2D border,Texture2D skin, bool isA)
         {
             _graphcis = gd;
             xCord = x;
             yCord = y;
             width = w;
             height = h;
-            BackSkin = skin;
+            BackSkin = border;
+            playerSkin = skin;
             isActive = isA;
         }
 
         public override void Draw(SpriteBatch sb, SpriteFont sf)
         {
+            //THIS IS DESIGNED TO REALLY ONLY FIT A 300X300 BOX may need to have smaller variant or updated for that depending on if its needed later
             if (isActive)
             {
                 sb.Draw(BackSkin, new Rectangle(xCord, yCord, width, height),Color.White);
+                sb.Draw(playerSkin, new Rectangle(xCord + width / 2 - 64, yCord + height / 2 - 128, 128, 256),Color.White);
             }
 
 

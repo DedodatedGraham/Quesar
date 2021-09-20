@@ -17,6 +17,7 @@ namespace Quesar
         public GraphicsDevice gd;
         public Texture2D skin1;
         public Texture2D charBox;
+        public Texture2D defaultSkin;
         public GraphicsDeviceManager gdm;
         
         public string currentdown;
@@ -30,16 +31,19 @@ namespace Quesar
         public UiElement[] startMenu;
         public UiElement[] optionMenu;
         public UiElement[] charCreateMenu;
+
+        public Player outputNewPlayer;
         
 
         //The Constructor more serves for loading& initializing all the ui menus to be ready & defined when needed.
-        public UiManager(GraphicsDevice graph,Texture2D sk1,Texture2D cb,GraphicsDeviceManager grdm)
+        public UiManager(GraphicsDevice graph,Texture2D sk1,Texture2D cb,GraphicsDeviceManager grdm,Texture2D ds)
         {
 
             gd = graph;
             skin1 = sk1;
             charBox = cb;
             gdm = grdm;
+            defaultSkin = ds;
 
             currentdown = "";
             lastdown = "";
@@ -58,9 +62,10 @@ namespace Quesar
                 
 
                 //CreateChar 
-                charCreateMenu = new UiElement[2];
+                charCreateMenu = new UiElement[3];
                 charCreateMenu[0] = new TextBox(gd, (gdm.PreferredBackBufferWidth/2)-100,(gdm.PreferredBackBufferHeight/2) - 85,200,50,10,"Name:",skin1,false);
-                charCreateMenu[1] = new PlayerBox(gd,(gdm.PreferredBackBufferWidth/2) - 150,(gdm.PreferredBackBufferHeight/2) -85 -10 - 300,300,300,charBox,false);
+                charCreateMenu[1] = new PlayerBox(gd,(gdm.PreferredBackBufferWidth/2) - 150,(gdm.PreferredBackBufferHeight/2) -85 -10 - 300,300,300,charBox,defaultSkin,false);
+                charCreateMenu[2] = new Button(gd, (gdm.PreferredBackBufferWidth / 2) - 50, (gdm.PreferredBackBufferHeight / 2) + (gdm.PreferredBackBufferHeight / 4), 100, 50,"Begin Game!", skin1, false);
         }
 
 
@@ -151,7 +156,7 @@ namespace Quesar
                 {
                     //Exits
                     Task.Delay(250);
-                    return 31;
+                    return 3;
                 }
             }
 
@@ -168,12 +173,18 @@ namespace Quesar
                     if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (Mouse.GetState().LeftButton == ButtonState.Pressed))
                     {
                         ((TextBox)charCreateMenu[0]).isTyping = false;
+                        outputNewPlayer = new Player(gd, defaultSkin, ((TextBox)charCreateMenu[0]).typed);
                     }
                     
                     
 
                         ((TextBox)charCreateMenu[0]).typed = GetKeys(gameTime);
                     
+                }
+                if (charCreateMenu[2].isClicked())
+                {   
+                    ///111 Will be the start code 
+                    return 111;
                 }
 
             }
