@@ -66,13 +66,25 @@ namespace Quesar
                 Vector2 size = font.MeasureString(words);
                 Vector2 size2 = font.MeasureString(typed);
 
-
+                //Some bullshit gotta get drawstring aligned on a pixel or else bad things D:
                 sp.Draw(buttonSkin, new Rectangle(xCord, yCord, width, height), Color.White);
                 sp.DrawRectangle(r, Color.White);
-                sp.DrawString(font, words, new Vector2(xCord + (width / 2 - size.X / 2), yCord + (height / 10)), Color.Black);
 
+                double x1 = xCord + (width / 2 - size.X / 2);
+                double y1 = yCord + (height / 10);
+                x1 = Math.Floor(x1);
+                y1 = Math.Floor(y1);
+                Point p1 = new Point((int)x1, (int)y1);
 
-                sp.DrawString(font, typed, new Vector2(xCord + (width / 2 - size2.X / 2), yCord + (height * (55 / 100) + size2.Y)), Color.Black);
+                sp.DrawString(font, words,p1.ToVector2(), Color.Black,0,new Vector2(0),1,0,1);
+                
+                
+                double x2 = xCord + (width / 2 - size2.X / 2);
+                double y2 = yCord + (height * (55 / 100) + size2.Y);
+                x2 = Math.Floor(x2);
+                y2 = Math.Floor(y2);
+                Point p2 = new Point((int)x2, (int)y2);
+                sp.DrawString(font, typed, p2.ToVector2(), Color.Black, 0, new Vector2(0), 1, 0, 1);
 
 
 

@@ -18,6 +18,8 @@ namespace Quesar
         public int uiStage;
         public UiManager _uiManager;
 
+        public Map[] placelist;
+
 
         private Texture2D background;
         private Texture2D altbackground;
@@ -72,7 +74,7 @@ namespace Quesar
             background = Content.Load<Texture2D>("BackgroundV2");
             altbackground = Content.Load<Texture2D>("BackgroundV1");
             buttonv1 = Content.Load<Texture2D>("ButtonV1");
-            publicFont = Content.Load<SpriteFont>("Font");
+            publicFont = Content.Load<SpriteFont>("Gemmu");
             charDisplayBox = Content.Load<Texture2D>("CharacterDisplayBox");
             defaulSkin = Content.Load<Texture2D>("DefaultCharV1");
 
@@ -115,6 +117,7 @@ namespace Quesar
                 case 111:
                     gameRun = true;
                     thisPlayer = _uiManager.outputNewPlayer;
+                    uiStage = 111;
                     break;
 
                 case 2:
@@ -201,6 +204,8 @@ namespace Quesar
                 case 2:
                     return altbackground;
                 case 11:
+                    return altbackground;
+                case 111:
                     return altbackground;
 
 

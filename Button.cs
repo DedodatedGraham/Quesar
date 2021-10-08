@@ -52,7 +52,13 @@ namespace Quesar
             {
                 sp.Draw(buttonSkin, new Rectangle(xCord, yCord, width, height), Color.White);
                 //might need to fiddle with positioning of text later butthis will work for now
-                sp.DrawString(font,words,new Vector2(xCord + (width/2 - size.X/2),yCord + (height/2 - size.Y/2)),Color.Black);
+                double x = xCord + (width / 2 - size.X / 2);
+                double y = yCord + (height / 2 - size.Y / 2);
+                x = Math.Floor(x);
+                y = Math.Floor(y);
+                Point p = new Point((int)x, (int)y);
+
+                sp.DrawString(font,words,p.ToVector2(),Color.Black);
             }
 
 

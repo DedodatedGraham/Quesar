@@ -85,7 +85,10 @@ namespace Quesar
             {
                 DrawCharCreate(sp,font);
             }
-
+            if(curUiStage == 111)
+            {
+                //do nothing here but stop drawing the char create
+            }
         }
 
         public void DrawStartMenu(SpriteBatch sp, SpriteFont font)
