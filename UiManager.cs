@@ -87,7 +87,6 @@ namespace Quesar
             }
             if(curUiStage == 111)
             {
-                //do nothing here but stop drawing the char create
             }
         }
 
