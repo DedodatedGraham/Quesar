@@ -30,18 +30,15 @@ namespace Quesar
 
 
 
-        //Things to do with relative size & location tracking 
-        public const int pixelHeight = 64;
-        public const int pixelWidth = 32;
-        public const int tileHeight = pixelHeight / 32;
-        public const int tileWidth = pixelWidth / 32;
+        
         //Things to do with displaying Player
         public Texture2D skin { get; set; }
         public OrthographicCamera cam;
         public GraphicsDevice graphicsDevice { get; set; }
 
 
-        public Player(GraphicsDevice gd,Texture2D con,string newname)
+
+        public Player(GraphicsDeviceManager gdm,GraphicsDevice gd,Texture2D con,string newname)
         {
             graphicsDevice = gd;
             name = newname;
@@ -52,10 +49,10 @@ namespace Quesar
             isActive = false;
             world = 1;
             skin = con;
-            x = 0;
-            y = 0;
+            x = gdm.PreferredBackBufferWidth/2-skin.Width/2;
+            y = gdm.PreferredBackBufferHeight / 2 - skin.Height / 2;
             rectangle = new Rectangle(x,y,skin.Width,skin.Height);
-            cam = new OrthographicCamera(graphicsDevice);
+            
         }
 
         //this adds a ship to the list of character ships, only lets it go if it has space
@@ -73,19 +70,16 @@ namespace Quesar
             
         }
 
-        public void Move(Vector2 v)
-        {
-            
-        }
+        
 
         public void Draw(SpriteBatch sp)
         {
 
 
-            sp.Begin(SpriteSortMode.Deferred, null, null, transformMatrix: cam.GetViewMatrix());
+            sp.Begin();
 
 
-            sp.Draw(skin, new Size2(0,0), Color.White);
+            sp.Draw(skin, new Size2(x,y), Color.White);
 
             sp.End();
 

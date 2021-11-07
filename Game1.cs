@@ -29,7 +29,8 @@ namespace Quesar
         public Texture2D buttonv1;
         public Texture2D charDisplayBox;
         public Texture2D defaulSkin;
-        
+
+        public OrthographicCamera camera;
 
         //compnents to making the testShip
         //private Ship testShip;
@@ -84,7 +85,9 @@ namespace Quesar
             gameMap = new Map(GraphicsDevice,100,100,"gameMap",Content);
 
 
-            thisPlayer = new Player(GraphicsDevice, defaulSkin, "temp");
+            thisPlayer = new Player(_graphics,GraphicsDevice, defaulSkin, "temp");
+
+            camera = new OrthographicCamera(GraphicsDevice);
             // Inform Myra that external text input is available
             // So it stops translating Keys to chars
 
@@ -104,8 +107,8 @@ namespace Quesar
             zooom = 0.2f;
             if(uiStage == 111)
             {
-                thisPlayer.cam.Move(GetMovementDirection() * camMovementSpeed);
-                thisPlayer.Move(GetMovementDirection());
+                camera.Move(GetMovementDirection() * camMovementSpeed);
+                
             }
             //testShip.camera.Move(GetMovementDirection() * camMovementSpeed );
             //testShip.camera.ZoomIn(GetZoom() * zooom);
@@ -151,7 +154,7 @@ namespace Quesar
             GraphicsDevice.Clear(Color.White);
             
             // TODO: Add your drawing code here
-            _spriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointWrap);
+            _spriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointWrap, transformMatrix: camera.GetViewMatrix());
             
 
             //This is the background and always the last thing on the screen, 
@@ -186,19 +189,19 @@ namespace Quesar
             var state = Keyboard.GetState();
             if (state.IsKeyDown(Keys.S))
             {
-                movementDirection -= Vector2.UnitY;
+                movementDirection += Vector2.UnitY;
             }
             if (state.IsKeyDown(Keys.W))
             {
-                movementDirection += Vector2.UnitY;
+                movementDirection -= Vector2.UnitY;
             }
             if (state.IsKeyDown(Keys.A))
             {
-                movementDirection += Vector2.UnitX;
+                movementDirection -= Vector2.UnitX;
             }
             if (state.IsKeyDown(Keys.D))
             {
-                movementDirection -= Vector2.UnitX;
+                movementDirection += Vector2.UnitX;
             }
             return movementDirection;
         }
