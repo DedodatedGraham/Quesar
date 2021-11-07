@@ -11,14 +11,17 @@ namespace Quesar
         public SpriteFont publicFont;
 
         public bool gameRun;
-        
+
+
+        public int camMovementSpeed;
+        public float zooom;
         
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         public int uiStage;
         public UiManager _uiManager;
 
-        public Map[] placelist;
+        public Map gameMap;
 
 
         private Texture2D background;
@@ -55,7 +58,6 @@ namespace Quesar
             
             
 
-
             base.Initialize();
 
             
@@ -79,8 +81,10 @@ namespace Quesar
             defaulSkin = Content.Load<Texture2D>("DefaultCharV1");
 
             _uiManager = new UiManager(GraphicsDevice, buttonv1,charDisplayBox, _graphics,defaulSkin);
+            gameMap = new Map(GraphicsDevice,100,100,"gameMap",Content);
 
 
+            thisPlayer = new Player(GraphicsDevice, defaulSkin, "temp");
             // Inform Myra that external text input is available
             // So it stops translating Keys to chars
 
@@ -96,8 +100,13 @@ namespace Quesar
             // TODO: Add your update logic here
 
             //This updates Camera movement to the testship
-            //camMovementSpeed = 2;
-            //zooom = 0.2f;
+            camMovementSpeed = 2;
+            zooom = 0.2f;
+            if(uiStage == 111)
+            {
+                thisPlayer.cam.Move(GetMovementDirection() * camMovementSpeed);
+                thisPlayer.Move(GetMovementDirection());
+            }
             //testShip.camera.Move(GetMovementDirection() * camMovementSpeed );
             //testShip.camera.ZoomIn(GetZoom() * zooom);
 
@@ -116,8 +125,11 @@ namespace Quesar
                     break;
                 case 111:
                     gameRun = true;
-                    thisPlayer = _uiManager.outputNewPlayer;
+                    thisPlayer.name = _uiManager.outputNewPlayer;
                     uiStage = 111;
+                    //Make sure to update this for getting a players location and spawning in last map
+                    gameMap.mapStage = thisPlayer.world;
+                    thisPlayer.isActive = true;
                     break;
 
                 case 2:
@@ -143,12 +155,29 @@ namespace Quesar
             
 
             //This is the background and always the last thing on the screen, 
-            _spriteBatch.Draw(getUiStageBackground(), new Vector2(0, 0), Color.White);
+
+            if(uiStage != 111)
+            {
+                _spriteBatch.Draw(getUiStageBackground(), new Vector2(0, 0), Color.White);
+            }
+            
+           
+            
             _uiManager.Draw(_spriteBatch, publicFont, uiStage);
+
+
+            gameMap.Draw(_spriteBatch);
+
+
             //Heres the ui menu drawing
 
 
             _spriteBatch.End();
+            if (thisPlayer.isActive)
+            {
+
+                thisPlayer.Draw(_spriteBatch);
+            }
         }
 
         private Vector2 GetMovementDirection()

@@ -17,7 +17,12 @@ namespace Quesar
         public int level { get; set; }
         public double exp { get; set; }
         public int health { get; set; }
-        
+        //things with player location
+        public bool isActive { get; set; }
+        public int world { get; set; }
+        public int x { get; set; }
+        public int y { get; set; }
+        public Rectangle rectangle { get; set; }
        
         //things to do with the players ships
         public int maxShip { get; set; }
@@ -44,7 +49,12 @@ namespace Quesar
             exp = 0;
             ships = null;
             maxShip = 1;
+            isActive = false;
+            world = 1;
             skin = con;
+            x = 0;
+            y = 0;
+            rectangle = new Rectangle(x,y,skin.Width,skin.Height);
             cam = new OrthographicCamera(graphicsDevice);
         }
 
@@ -63,8 +73,21 @@ namespace Quesar
             
         }
 
-        public void Draw()
+        public void Move(Vector2 v)
         {
+            
+        }
+
+        public void Draw(SpriteBatch sp)
+        {
+
+
+            sp.Begin(SpriteSortMode.Deferred, null, null, transformMatrix: cam.GetViewMatrix());
+
+
+            sp.Draw(skin, new Size2(0,0), Color.White);
+
+            sp.End();
 
         }
 

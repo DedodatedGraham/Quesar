@@ -16,9 +16,11 @@ namespace Quesar.GameCustomClasses
 
         public string name { get; set; }
 
-        public int tileX { get; set; }
-        public int tileY { get; set; }
+        public override int tileX { get; set; }
+        public override int tileY { get; set; }
 
+        public override bool isActive { get; set; }
+        public Rectangle rectangle { get; set; }
         public Building(Texture2D sk,int x,int y){
 
             skin = sk;
@@ -28,8 +30,19 @@ namespace Quesar.GameCustomClasses
             tileY = y;
 
 
+            rectangle = new Rectangle(tileX*32,tileY*32, skin.Width*2, skin.Height*2);
 
 
+        }
+
+
+
+        public override void Draw(SpriteBatch sp)
+        {
+            if (isActive)
+            {
+                sp.Draw(skin, rectangle, Color.White);
+            }
 
         }
     }

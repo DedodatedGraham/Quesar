@@ -32,7 +32,7 @@ namespace Quesar
         public UiElement[] optionMenu;
         public UiElement[] charCreateMenu;
 
-        public Player outputNewPlayer;
+        public string outputNewPlayer;
         
 
         //The Constructor more serves for loading& initializing all the ui menus to be ready & defined when needed.
@@ -99,10 +99,6 @@ namespace Quesar
                 startMenu[i].Draw(sp, font);
                 i++;
             }
-            for(int j = 0; j > startMenu.Length; j++)
-            {
-                startMenu[j].isActive = false;
-            }
         }
         public void DrawOptionsMenu(SpriteBatch sp, SpriteFont font)
         {
@@ -128,16 +124,35 @@ namespace Quesar
                 charCreateMenu[i].Draw(sp, font);
                 i++;
             }
+        }
+        public void ClearCharCreate()
+        {
+
             for (int j = 0; j > charCreateMenu.Length; j++)
             {
                 charCreateMenu[j].isActive = false;
             }
         }
-        
-        
-        
-        
-        
+        public void ClearOptionsMenu()
+        {
+
+            for (int j = 0; j > optionMenu.Length; j++)
+            {
+                optionMenu[j].isActive = false;
+            }
+        }
+        public void ClearStartMenu()
+        {
+
+            for (int j = 0; j > startMenu.Length; j++)
+            {
+                startMenu[j].isActive = false;
+            }
+        }
+
+
+
+
         public int UpdateManager(GameTime gameTime,int curUiStage)
         {
             
@@ -146,18 +161,23 @@ namespace Quesar
                 if (startMenu[0].isClicked())
                 {
                     Task.Delay(250);
+
+                    ClearStartMenu();
                     return 11;
                 }
                 if (startMenu[1].isClicked())
                 {
                     //Goes to option menu
                     Task.Delay(250);
+
+                    ClearStartMenu();
                     return 21;
                 }
                 if (startMenu[2].isClicked())
                 {
                     //Exits
                     Task.Delay(250);
+                    ClearStartMenu();
                     return 3;
                 }
             }
@@ -175,7 +195,7 @@ namespace Quesar
                     if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (Mouse.GetState().LeftButton == ButtonState.Pressed))
                     {
                         ((TextBox)charCreateMenu[0]).isTyping = false;
-                        outputNewPlayer = new Player(gd, defaultSkin, ((TextBox)charCreateMenu[0]).typed);
+                        outputNewPlayer =  ((TextBox)charCreateMenu[0]).typed;
                     }
                     
                     
@@ -184,8 +204,9 @@ namespace Quesar
                     
                 }
                 if (charCreateMenu[2].isClicked())
-                {   
+                {
                     ///111 Will be the start code 
+                    ClearCharCreate();
                     return 111;
                 }
 
@@ -199,10 +220,7 @@ namespace Quesar
             
 
         }
-        public void UpdateLogic()
-        {
 
-        }
 
         public string GetKeys(GameTime gameTime)
         {
