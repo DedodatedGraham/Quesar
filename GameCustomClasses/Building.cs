@@ -9,13 +9,28 @@ using MonoGame.Extended;
 
 namespace Quesar.GameCustomClasses
 {
-    public class Building
+    public class Building : MapElement
     {
 
         public Texture2D skin { get; set; }
-        public Building(Texture2D sk){
+
+        public string name { get; set; }
+
+        public int tileX { get; set; }
+        public int tileY { get; set; }
+
+        public Building(Texture2D sk,int x,int y){
 
             skin = sk;
+
+
+            tileX = x;
+            tileY = y;
+
+
+
+
+
         }
     }
 }

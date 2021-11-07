@@ -18,17 +18,25 @@ namespace Quesar
         public GraphicsDevice graphicsDevice { get; set; }
         public OrthographicCamera camera { get; }
 
-        public GameCustomClasses.Building julios { get; set; }
+        public MapElement[] earthBuildings { get; set; }
 
+        public MapTile earthMapTile { get; set; }
         public Map(GraphicsDevice gd,int xSize, int ySize,string name,ContentManager c)
         {
             mapName = name;
 
             graphicsDevice = gd;
-            mapTile = new MapTile(graphicsDevice, xSize, ySize);
+            
             camera = new OrthographicCamera(graphicsDevice);
 
-            julios = new GameCustomClasses.Building(c.Load<Texture2D>("JuliosV1"));
+
+
+
+            //Loading in EarthMap Tiles & buildings
+            earthMapTile = new MapTile(graphicsDevice, xSize, ySize);
+            earthBuildings = new MapElement[1];
+            earthBuildings[0] = new GameCustomClasses.Building(c.Load<Texture2D>("JuliosV1"),1,1);
+            //loading whatever is the next map
         }
 
         public void Draw()
@@ -37,6 +45,11 @@ namespace Quesar
 
 
 
+
+        }
+
+        public void update()
+        {
 
         }
 
