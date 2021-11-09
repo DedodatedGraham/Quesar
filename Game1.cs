@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
+using Quesar.GameCustomClasses;
+using System;
 
 namespace Quesar
 {
@@ -185,23 +187,50 @@ namespace Quesar
 
         private Vector2 GetMovementDirection()
         {
+            int p = 0;
             var movementDirection = Vector2.Zero;
             var state = Keyboard.GetState();
-            if (state.IsKeyDown(Keys.S))
+            GameCustomClasses.Hitbox[] hb = gameMap.activeHits();
+            if (IsColiding(thisPlayer.hitbox,hb, out p) == false)
             {
-                movementDirection += Vector2.UnitY;
+                
+                if (state.IsKeyDown(Keys.S))
+                {
+                    movementDirection += Vector2.UnitY;
+                }
+                if (state.IsKeyDown(Keys.W))
+                {
+                    movementDirection -= Vector2.UnitY;
+                }
+                if (state.IsKeyDown(Keys.A))
+                {
+                    movementDirection -= Vector2.UnitX;
+                }
+                if (state.IsKeyDown(Keys.D))
+                {
+                    movementDirection += Vector2.UnitX;
+                }
             }
-            if (state.IsKeyDown(Keys.W))
+            else
             {
-                movementDirection -= Vector2.UnitY;
-            }
-            if (state.IsKeyDown(Keys.A))
-            {
-                movementDirection -= Vector2.UnitX;
-            }
-            if (state.IsKeyDown(Keys.D))
-            {
-                movementDirection += Vector2.UnitX;
+                if (thisPlayer.hitbox.GetCorners()[0].X <= hb[p].GetCorners()[1].X)
+                {
+                    movementDirection += Vector2.UnitX;
+                }
+                if (thisPlayer.hitbox.GetCorners()[1].X >= hb[p].GetCorners()[0].X)
+                {
+                    movementDirection -= Vector2.UnitX;
+                }
+                if (thisPlayer.hitbox.GetCorners()[0].Y <= hb[p].GetCorners()[1].Y)
+                {
+                    movementDirection += Vector2.UnitY;
+                }
+                if (thisPlayer.hitbox.GetCorners()[1].Y >= hb[p].GetCorners()[0].Y)
+                {
+                    movementDirection -= Vector2.UnitY;
+                }
+
+
             }
             return movementDirection;
         }
@@ -246,6 +275,36 @@ namespace Quesar
 
 
 
+        }
+        
+        public bool IsColiding(GameCustomClasses.Hitbox a, GameCustomClasses.Hitbox[] b,out int p)
+        {
+            bool isc = false;
+            //remeber P 1 is for spot 0 in array,
+            //did this so if outputs a 0 then no intersection and if outputs intersection it gives specfic cord output aswell as a boolean which can determine
+            //if it can move, and if it cant adjusts by some degree of p  
+            //saves memory? idno
+            p = 0;
+
+            for(int i = 1; i < b.Length; i++)
+            {
+                if ((a.GetCorners()[0].X <= b[i].GetCorners()[1].X && a.GetCorners()[0].X >= b[i].GetCorners()[0].X) || (a.GetCorners()[1].X <= b[i].GetCorners()[1].X && a.GetCorners()[1].X >= b[i].GetCorners()[0].X))
+                {
+                    if ((a.GetCorners()[0].Y <= b[i].GetCorners()[1].Y && a.GetCorners()[0].Y >= b[i].GetCorners()[1].Y) || (a.GetCorners()[1].Y <= b[i].GetCorners()[1].Y && a.GetCorners()[1].Y >= b[i].GetCorners()[1].Y))
+                    {
+
+                        isc = true;
+                        p = i;
+
+                    }
+
+                }
+            
+
+            }
+
+
+            return isc;
         }
 
 

@@ -16,10 +16,13 @@ namespace Quesar
 
         public int mapStage { get; set; }
 
+        public const int render = 10;
+
         protected MapTile mapTile;
         public GraphicsDevice graphicsDevice { get; set; }
         public OrthographicCamera camera { get; }
 
+        public MapElement[][] universe { get; set; }
         public MapElement[] earthBuildings { get; set; }
 
         public MapTile earthMapTile { get; set; }
@@ -37,8 +40,12 @@ namespace Quesar
             //Loading in EarthMap Tiles & buildings
             earthMapTile = new MapTile(graphicsDevice, xSize, ySize);
             earthBuildings = new MapElement[1];
-            earthBuildings[0] = new GameCustomClasses.Building(c.Load<Texture2D>("JuliosV1"),1,1);
+            earthBuildings[0] = new GameCustomClasses.Building(c.Load<Texture2D>("JuliosV1"),1,1,20,20);
             //loading whatever is the next map
+
+
+            universe = new MapElement[1][];
+            universe[0] = earthBuildings;
         }
 
         public void Draw(SpriteBatch sp)
@@ -51,7 +58,8 @@ namespace Quesar
                 {
                     //replace the 10 with some math to calulate how close the x & y need to be to render(this is the rendeing logic, should be fairly simple bc just checking if
                     //the x & y are accurate, and if the isActive is false, then it wont draw the picture. bc of self check :p
-                    if (earthBuildings[i].tileX < 10 && earthBuildings[i].tileY < 10)
+                    //mighjt move rendering into its own thing though so it can be used by other things easier
+                    if (earthBuildings[i].tileX < render && earthBuildings[i].tileY < render)
                     {
 
                         earthBuildings[i].isActive = true;
@@ -73,6 +81,28 @@ namespace Quesar
 
         }
 
+        public GameCustomClasses.Hitbox[] activeHits()
+        {
+            
+            int i = 0;
 
+            List<GameCustomClasses.Hitbox> send = new List<GameCustomClasses.Hitbox>();
+
+            while (i < universe[mapStage -1].Length)
+            {
+                if(universe[mapStage -1][i].isActive == true)
+                {
+                    send.Add(universe[mapStage-1][i].hitbox);
+                    
+                }
+
+                i++;
+            }
+
+
+
+
+            return send.ToArray();
+        }
     }
 }

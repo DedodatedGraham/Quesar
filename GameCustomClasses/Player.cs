@@ -28,6 +28,9 @@ namespace Quesar
         public int maxShip { get; set; }
         public List<Ship> ships { get; set; }
 
+        //HitBox
+        public GameCustomClasses.Hitbox hitbox { get; set; }
+
 
 
         
@@ -52,7 +55,10 @@ namespace Quesar
             x = gdm.PreferredBackBufferWidth/2-skin.Width/2;
             y = gdm.PreferredBackBufferHeight / 2 - skin.Height / 2;
             rectangle = new Rectangle(x,y,skin.Width,skin.Height);
-            
+
+            hitbox = new GameCustomClasses.Hitbox(0,0,0,0,skin.Width,skin.Height);
+
+
         }
 
         //this adds a ship to the list of character ships, only lets it go if it has space
@@ -86,7 +92,11 @@ namespace Quesar
         }
 
 
+        public void updatePlayer()
+        {   
 
+
+        }
 
 
 
