@@ -56,7 +56,7 @@ namespace Quesar
             y = gdm.PreferredBackBufferHeight / 2 - skin.Height / 2;
             rectangle = new Rectangle(x,y,skin.Width,skin.Height);
 
-            hitbox = new GameCustomClasses.Hitbox(0,0,0,0,skin.Width,skin.Height);
+            hitbox = new GameCustomClasses.Hitbox((int)Math.Floor((decimal)x/32) , (int)Math.Floor((decimal)y / 32) , x- ((int)Math.Floor((decimal)x / 32)*32) , y - ((int)Math.Floor((decimal)y / 32) * 32), skin.Width,skin.Height);
 
 
         }
@@ -86,6 +86,7 @@ namespace Quesar
 
 
             sp.Draw(skin, new Size2(x,y), Color.White);
+            hitbox.DrawHitbox(sp);
 
             sp.End();
 
@@ -93,8 +94,11 @@ namespace Quesar
 
 
         public void updatePlayer()
-        {   
-
+        {
+            hitbox.tileX = ((int)Math.Floor((decimal)x / 32));
+            hitbox.tileY = ((int)Math.Floor((decimal)y / 32));
+            hitbox.posTileY = x - ((int)Math.Floor((decimal)x / 32) * 32);
+            hitbox.posTileY = y - ((int)Math.Floor((decimal)y / 32) * 32);
 
         }
 

@@ -46,6 +46,7 @@ namespace Quesar.GameCustomClasses
             if (isActive)
             {
                 sp.Draw(skin, rectangle, Color.White);
+                hitbox.DrawHitbox(sp);
             }
 
         }

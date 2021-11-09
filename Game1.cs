@@ -35,9 +35,6 @@ namespace Quesar
         public OrthographicCamera camera;
 
         //compnents to making the testShip
-        //private Ship testShip;
-        //private int camMovementSpeed;
-        //private float zooom;
         private int lastScroll;
         public Game1()
         {
@@ -104,19 +101,50 @@ namespace Quesar
 
             // TODO: Add your update logic here
 
-            //This updates Camera movement to the testship
+            //This updates Camera movement to the testship.
             camMovementSpeed = 2;
             zooom = 0.2f;
+
+
+            //PlayerMovement
             if(uiStage == 111)
             {
-                camera.Move(GetMovementDirection() * camMovementSpeed);
+                int con = 32;
+                Vector2 move = GetMovementDirection();
+                camera.Move(move * camMovementSpeed);
+                thisPlayer.hitbox.posTileX += (int)move.X * camMovementSpeed;
+                thisPlayer.hitbox.posTileY += (int)move.Y * camMovementSpeed;
+                thisPlayer.x += (int)move.X * camMovementSpeed;
+                thisPlayer.y += (int)move.Y * camMovementSpeed;
+                if (thisPlayer.hitbox.posTileX >= con)
+                {
+                    thisPlayer.hitbox.tileX++;
+                    thisPlayer.hitbox.posTileX = 0;
+                }
+                if (thisPlayer.hitbox.posTileY >= con)
+                {
+                    thisPlayer.hitbox.tileY++;
+                    thisPlayer.hitbox.posTileY = 0;
+                }
+                if (thisPlayer.hitbox.posTileX < 0)
+                {
+                    thisPlayer.hitbox.tileX--;
+                    thisPlayer.hitbox.posTileX = con;
+                }
+                if (thisPlayer.hitbox.posTileY < 0)
+                {
+                    thisPlayer.hitbox.tileY--;
+                    thisPlayer.hitbox.posTileY = con;
+                }
+                
+                    
+                
+                
                 
             }
-            //testShip.camera.Move(GetMovementDirection() * camMovementSpeed );
-            //testShip.camera.ZoomIn(GetZoom() * zooom);
 
-
-
+            thisPlayer.updatePlayer();
+            //ui stage logic
            switch(_uiManager.UpdateManager(gameTime, uiStage))
             {
                 case 0:
@@ -215,19 +243,19 @@ namespace Quesar
             {
                 if (thisPlayer.hitbox.GetCorners()[0].X <= hb[p].GetCorners()[1].X)
                 {
-                    movementDirection += Vector2.UnitX;
+                    movementDirection = Vector2.UnitX;
                 }
                 if (thisPlayer.hitbox.GetCorners()[1].X >= hb[p].GetCorners()[0].X)
                 {
-                    movementDirection -= Vector2.UnitX;
+                    movementDirection = Vector2.UnitX;
                 }
                 if (thisPlayer.hitbox.GetCorners()[0].Y <= hb[p].GetCorners()[1].Y)
                 {
-                    movementDirection += Vector2.UnitY;
+                    movementDirection = Vector2.UnitY;
                 }
                 if (thisPlayer.hitbox.GetCorners()[1].Y >= hb[p].GetCorners()[0].Y)
                 {
-                    movementDirection -= Vector2.UnitY;
+                    movementDirection = Vector2.UnitY;
                 }
 
 
