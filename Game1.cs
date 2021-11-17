@@ -97,53 +97,32 @@ namespace Quesar
         protected override void Update(GameTime gameTime)
         {
             if (uiStage == 3)
+            {
                 Exit();
+            }
+                
 
             // TODO: Add your update logic here
 
             //This updates Camera movement to the testship.
-            camMovementSpeed = 2;
+            
             zooom = 0.2f;
-
+            gameMap.update(thisPlayer.getCurrentTile());
 
             //PlayerMovement
-            if(uiStage == 111)
+            if(thisPlayer.isActive)
             {
-                int con = 32;
                 Vector2 move = GetMovementDirection();
-                camera.Move(move * camMovementSpeed);
-                thisPlayer.hitbox.posTileX += (int)move.X * camMovementSpeed;
-                thisPlayer.hitbox.posTileY += (int)move.Y * camMovementSpeed;
-                thisPlayer.x += (int)move.X * camMovementSpeed;
-                thisPlayer.y += (int)move.Y * camMovementSpeed;
-                if (thisPlayer.hitbox.posTileX >= con)
-                {
-                    thisPlayer.hitbox.tileX++;
-                    thisPlayer.hitbox.posTileX = 0;
-                }
-                if (thisPlayer.hitbox.posTileY >= con)
-                {
-                    thisPlayer.hitbox.tileY++;
-                    thisPlayer.hitbox.posTileY = 0;
-                }
-                if (thisPlayer.hitbox.posTileX < 0)
-                {
-                    thisPlayer.hitbox.tileX--;
-                    thisPlayer.hitbox.posTileX = con;
-                }
-                if (thisPlayer.hitbox.posTileY < 0)
-                {
-                    thisPlayer.hitbox.tileY--;
-                    thisPlayer.hitbox.posTileY = con;
-                }
                 
-                    
-                
-                
-                
+                thisPlayer.updatePlayer(move);
+                camera.LookAt(new Vector2(thisPlayer.x + thisPlayer.skin.Width/2, thisPlayer.y + thisPlayer.skin.Height/2));
+
+
+
+
+
             }
 
-            thisPlayer.updatePlayer();
             //ui stage logic
            switch(_uiManager.UpdateManager(gameTime, uiStage))
             {
@@ -215,11 +194,10 @@ namespace Quesar
 
         private Vector2 GetMovementDirection()
         {
-            int p = 0;
             var movementDirection = Vector2.Zero;
             var state = Keyboard.GetState();
             GameCustomClasses.Hitbox[] hb = gameMap.activeHits();
-            if (IsColiding(thisPlayer.hitbox,hb, out p) == false)
+            if (IsColiding(thisPlayer.hitbox,hb) == false)
             {
                 
                 if (state.IsKeyDown(Keys.S))
@@ -238,27 +216,6 @@ namespace Quesar
                 {
                     movementDirection += Vector2.UnitX;
                 }
-            }
-            else
-            {
-                if (thisPlayer.hitbox.GetCorners()[0].X <= hb[p].GetCorners()[1].X)
-                {
-                    movementDirection = Vector2.UnitX;
-                }
-                if (thisPlayer.hitbox.GetCorners()[1].X >= hb[p].GetCorners()[0].X)
-                {
-                    movementDirection = Vector2.UnitX;
-                }
-                if (thisPlayer.hitbox.GetCorners()[0].Y <= hb[p].GetCorners()[1].Y)
-                {
-                    movementDirection = Vector2.UnitY;
-                }
-                if (thisPlayer.hitbox.GetCorners()[1].Y >= hb[p].GetCorners()[0].Y)
-                {
-                    movementDirection = Vector2.UnitY;
-                }
-
-
             }
             return movementDirection;
         }
@@ -305,14 +262,13 @@ namespace Quesar
 
         }
         
-        public bool IsColiding(GameCustomClasses.Hitbox a, GameCustomClasses.Hitbox[] b,out int p)
+        public bool IsColiding(GameCustomClasses.Hitbox a, GameCustomClasses.Hitbox[] b)
         {
             bool isc = false;
             //remeber P 1 is for spot 0 in array,
             //did this so if outputs a 0 then no intersection and if outputs intersection it gives specfic cord output aswell as a boolean which can determine
             //if it can move, and if it cant adjusts by some degree of p  
             //saves memory? idno
-            p = 0;
 
             for(int i = 1; i < b.Length; i++)
             {
@@ -322,7 +278,6 @@ namespace Quesar
                     {
 
                         isc = true;
-                        p = i;
 
                     }
 

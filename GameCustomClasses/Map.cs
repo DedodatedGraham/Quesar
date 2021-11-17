@@ -25,6 +25,9 @@ namespace Quesar
         public MapElement[][] universe { get; set; }
         public MapElement[] earthBuildings { get; set; }
 
+        //keeps track of elements rendered in
+        public List<int> rendered { get; set; }
+
         public MapTile earthMapTile { get; set; }
         public Map(GraphicsDevice gd,int xSize, int ySize,string name,ContentManager c)
         {
@@ -36,6 +39,7 @@ namespace Quesar
 
             mapStage = 0;
 
+            mapTile = new MapTile(gd, 300, 300);
 
             //Loading in EarthMap Tiles & buildings
             earthMapTile = new MapTile(graphicsDevice, xSize, ySize);
@@ -46,38 +50,60 @@ namespace Quesar
 
             universe = new MapElement[1][];
             universe[0] = earthBuildings;
+
+            rendered = new List<int>();
         }
 
         public void Draw(SpriteBatch sp)
         {
-
-            if(mapStage == 1)
+            //Draws anything that is rendered into the game on the given map that is supposed to be rendered
+            if(mapStage != 0)
             {
                 int i = 0;
-                while (i < earthBuildings.Length)
+                while (i < rendered.Count)
                 {
-                    //replace the 10 with some math to calulate how close the x & y need to be to render(this is the rendeing logic, should be fairly simple bc just checking if
-                    //the x & y are accurate, and if the isActive is false, then it wont draw the picture. bc of self check :p
-                    //mighjt move rendering into its own thing though so it can be used by other things easier
-                    if (earthBuildings[i].tileX < render && earthBuildings[i].tileY < render)
-                    {
-
-                        earthBuildings[i].isActive = true;
-                    }
-                    else
-                    {
-                        earthBuildings[i].isActive = false;
-                    }
-                    earthBuildings[i].Draw(sp);
+                    universe[mapStage-1][rendered[i]].Draw(sp);
                     i++;
                 }
+                mapTile.Draw(sp);
             }
 
 
         }
 
-        public void update()
+        public void update(Vector2 playerTile)
         {
+
+            int rL = 40;
+            //Rendering Logic Goes Here, Updates the Rendering with what is turning active/not and adjusting the rendered list to cointain only the building/obj
+            int i = 0;
+            if(mapStage != 0)
+            {
+                while (i < universe[mapStage - 1].Length)
+                {
+                    bool shouldActive = (playerTile.X - universe[mapStage - 1][i].tileX <= rL && playerTile.X - universe[mapStage - 1][i].tileX >= -rL) && (playerTile.Y - universe[mapStage - 1][i].tileY <= rL && playerTile.Y - universe[mapStage - 1][i].tileY >= -rL);
+                    //Checks if active & shouldnt be
+                    if (universe[mapStage - 1][i].isActive && !shouldActive)
+                    {
+                        universe[mapStage - 1][i].isActive = false;
+                        rendered.Remove(i);
+                    }
+                    //checks if not active & should be
+                    if (!universe[mapStage - 1][i].isActive && shouldActive)
+                    {
+                        universe[mapStage - 1][i].isActive = true;
+                        rendered.Add(i);
+                    }
+                    i++;
+                }
+            }
+            
+
+
+
+
+
+
 
         }
 
@@ -88,13 +114,14 @@ namespace Quesar
 
             List<GameCustomClasses.Hitbox> send = new List<GameCustomClasses.Hitbox>();
 
-            while (i < universe[mapStage -1].Length)
+            while (i < rendered.Count)
             {
-                if(universe[mapStage -1][i].isActive == true)
-                {
-                    send.Add(universe[mapStage-1][i].hitbox);
                     
-                }
+                
+                
+                send.Add(universe[mapStage-1][rendered[i]].hitbox);
+                    
+                
 
                 i++;
             }

@@ -43,7 +43,7 @@ namespace Quesar.GameCustomClasses
 
         public void DrawHitbox(SpriteBatch sp)
         {
-            sp.DrawRectangle(new RectangleF(tileX+posTileX,tileY+posTileY,width,heigth), Color.Red);
+            sp.DrawRectangle(new RectangleF(tileX*32+posTileX,tileY*32+posTileY,width,heigth), Color.Red);
         }
         public Vector2[] GetCorners()
         {
@@ -55,7 +55,13 @@ namespace Quesar.GameCustomClasses
 
             return corn;
         }
-
+        public void update(int tx, int ptx, int ty, int pty)
+        {
+            tileX = tx;
+            posTileX = ptx;
+            tileY = ty;
+            posTileY = pty;
+        }
 
 
 

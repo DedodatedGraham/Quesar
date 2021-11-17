@@ -19,6 +19,8 @@ namespace Quesar
         public int health { get; set; }
         //things with player location
         public bool isActive { get; set; }
+
+        public int speed { get; set; }
         public int world { get; set; }
         public int x { get; set; }
         public int y { get; set; }
@@ -47,6 +49,7 @@ namespace Quesar
             name = newname;
             level = 0;
             exp = 0;
+            speed = 1;
             ships = null;
             maxShip = 1;
             isActive = false;
@@ -93,13 +96,21 @@ namespace Quesar
         }
 
 
-        public void updatePlayer()
+        public void updatePlayer(Vector2 movement)
         {
-            hitbox.tileX = ((int)Math.Floor((decimal)x / 32));
-            hitbox.tileY = ((int)Math.Floor((decimal)y / 32));
-            hitbox.posTileY = x - ((int)Math.Floor((decimal)x / 32) * 32);
-            hitbox.posTileY = y - ((int)Math.Floor((decimal)y / 32) * 32);
+            x += (int)movement.X * speed;
+            y += (int)movement.Y * speed;
+            rectangle = new Rectangle(x, y,skin.Width,skin.Height);
+            hitbox.update(((int)Math.Floor((decimal)x / 32)), x - ((int)Math.Floor((decimal)x / 32) * 32), ((int)Math.Floor((decimal)y / 32)), y - ((int)Math.Floor((decimal)y / 32) * 32));
+          
 
+        }
+
+        public Vector2 getCurrentTile()
+        {
+            int nx = (int)Math.Floor((decimal)x / 32);
+            int ny = (int)Math.Floor((decimal)y / 32);
+            return new Vector2(nx, ny);
         }
 
 
