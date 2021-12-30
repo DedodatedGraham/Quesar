@@ -107,29 +107,10 @@ namespace Quesar
 
         }
 
-        public GameCustomClasses.Hitbox[] activeHits()
+        public void Hits()
         {
-            
-            int i = 0;
-
-            List<GameCustomClasses.Hitbox> send = new List<GameCustomClasses.Hitbox>();
-
-            while (i < rendered.Count)
-            {
-                    
-                
-                
-                send.Add(universe[mapStage-1][rendered[i]].hitbox);
-                    
-                
-
-                i++;
-            }
-
-
-
-
-            return send.ToArray();
+            //Hitbox dection
+           
         }
     }
 }
