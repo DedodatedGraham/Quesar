@@ -22,7 +22,6 @@ namespace Quesar.GameCustomClasses
         public override bool isActive { get; set; }
         public Rectangle rectangle { get; set; }
 
-        public override Hitbox hitbox { get; set; }
         public Building(Texture2D sk,int x,int y,int ax, int ay){
 
             skin = sk;
@@ -34,7 +33,6 @@ namespace Quesar.GameCustomClasses
 
             rectangle = new Rectangle(tileX*32,tileY*32, skin.Width*2, skin.Height*2);
 
-            hitbox = new Hitbox(tileX, tileY, ax, ay, skin.Width * 2, skin.Height * 2);
 
 
         }
@@ -46,7 +44,6 @@ namespace Quesar.GameCustomClasses
             if (isActive)
             {
                 sp.Draw(skin, rectangle, Color.White);
-                hitbox.DrawHitbox(sp);
             }
 
         }

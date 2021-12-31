@@ -30,15 +30,13 @@ namespace Quesar
         public int maxShip { get; set; }
         public List<Ship> ships { get; set; }
 
-        //HitBox
-        public GameCustomClasses.Hitbox hitbox { get; set; }
+      
 
 
 
         
         //Things to do with displaying Player
         public Texture2D skin { get; set; }
-        public OrthographicCamera cam;
         public GraphicsDevice graphicsDevice { get; set; }
 
 
@@ -49,7 +47,7 @@ namespace Quesar
             name = newname;
             level = 0;
             exp = 0;
-            speed = 1;
+            speed = 10;
             ships = null;
             maxShip = 1;
             isActive = false;
@@ -59,7 +57,7 @@ namespace Quesar
             y = gdm.PreferredBackBufferHeight / 2 - skin.Height / 2;
             rectangle = new Rectangle(x,y,skin.Width,skin.Height);
 
-            hitbox = new GameCustomClasses.Hitbox((int)Math.Floor((decimal)x/32) , (int)Math.Floor((decimal)y / 32) , x- ((int)Math.Floor((decimal)x / 32)*32) , y - ((int)Math.Floor((decimal)y / 32) * 32), skin.Width,skin.Height);
+            
 
 
         }
@@ -88,30 +86,42 @@ namespace Quesar
             sp.Begin();
 
 
-            sp.Draw(skin, new Size2(x,y), Color.White);
-            hitbox.DrawHitbox(sp);
+            sp.Draw(skin, new Vector2(x,y), Color.White);
 
             sp.End();
 
         }
 
 
-        public void updatePlayer(Vector2 movement)
+        public void updatePlayer(KeyboardState keyboard)
         {
-            x += (int)movement.X * speed;
-            y += (int)movement.Y * speed;
-            rectangle = new Rectangle(x, y,skin.Width,skin.Height);
-            hitbox.update(((int)Math.Floor((decimal)x / 32)), x - ((int)Math.Floor((decimal)x / 32) * 32), ((int)Math.Floor((decimal)y / 32)), y - ((int)Math.Floor((decimal)y / 32) * 32));
-          
-
+            getMove(keyboard);
         }
 
-        public Vector2 getCurrentTile()
+        public void getMove(KeyboardState kb)
         {
-            int nx = (int)Math.Floor((decimal)x / 32);
-            int ny = (int)Math.Floor((decimal)y / 32);
-            return new Vector2(nx, ny);
+            if (kb.IsKeyDown(Keys.W))
+            {
+                y = y - speed;
+            }
+            if (kb.IsKeyDown(Keys.S))
+            {
+                y = y + speed;
+            }
+            if (kb.IsKeyDown(Keys.A))
+            {
+                x = x - speed;
+            }
+            if (kb.IsKeyDown(Keys.D))
+            {
+                x = x + speed;
+            }
         }
+        public Vector2 getPos()
+        {
+            return new Vector2(x, y);
+        }
+        
 
 
 

@@ -4,6 +4,10 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using Quesar.GameCustomClasses;
 using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using System;
 
 namespace Quesar
 {
@@ -24,6 +28,7 @@ namespace Quesar
         public UiManager _uiManager;
 
         public Map gameMap;
+
 
 
         private Texture2D background;
@@ -55,13 +60,13 @@ namespace Quesar
             _graphics.ApplyChanges();
 
             uiStage = 0;
+
             
-            
+
+
+
 
             base.Initialize();
-
-            
-            
         }
 
         protected override void LoadContent()
@@ -107,20 +112,13 @@ namespace Quesar
             //This updates Camera movement to the testship.
             
             zooom = 0.2f;
-            gameMap.update(thisPlayer.getCurrentTile());
+            gameMap.update(new Vector2(thisPlayer.x,thisPlayer.y));
 
             //PlayerMovement
             if(thisPlayer.isActive)
             {
-                Vector2 move = GetMovementDirection();
-                
-                thisPlayer.updatePlayer(move);
-                camera.LookAt(new Vector2(thisPlayer.x + thisPlayer.skin.Width/2, thisPlayer.y + thisPlayer.skin.Height/2));
-
-
-
-
-
+                thisPlayer.updatePlayer(Keyboard.GetState());
+                camera.Move(thisPlayer.getPos());
             }
 
             //ui stage logic
@@ -161,9 +159,10 @@ namespace Quesar
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.White);
-            
+
             // TODO: Add your drawing code here
-            _spriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointWrap, transformMatrix: camera.GetViewMatrix());
+            var viewMatrix = camera.GetViewMatrix();
+            _spriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointWrap,null,null,null, viewMatrix);
             
 
             //This is the background and always the last thing on the screen, 
@@ -184,41 +183,19 @@ namespace Quesar
             //Heres the ui menu drawing
 
 
+
             _spriteBatch.End();
+
             if (thisPlayer.isActive)
             {
 
                 thisPlayer.Draw(_spriteBatch);
             }
+
+           
         }
 
-        private Vector2 GetMovementDirection()
-        {
-            var movementDirection = Vector2.Zero;
-            var state = Keyboard.GetState();
-            GameCustomClasses.Hitbox[] hb = gameMap.activeHits();
-            if (IsColiding(thisPlayer.hitbox,hb) == false)
-            {
-                
-                if (state.IsKeyDown(Keys.S))
-                {
-                    movementDirection += Vector2.UnitY;
-                }
-                if (state.IsKeyDown(Keys.W))
-                {
-                    movementDirection -= Vector2.UnitY;
-                }
-                if (state.IsKeyDown(Keys.A))
-                {
-                    movementDirection -= Vector2.UnitX;
-                }
-                if (state.IsKeyDown(Keys.D))
-                {
-                    movementDirection += Vector2.UnitX;
-                }
-            }
-            return movementDirection;
-        }
+       
 
         private int GetZoom()
         {
@@ -262,33 +239,7 @@ namespace Quesar
 
         }
         
-        public bool IsColiding(GameCustomClasses.Hitbox a, GameCustomClasses.Hitbox[] b)
-        {
-            bool isc = false;
-            //remeber P 1 is for spot 0 in array,
-            //did this so if outputs a 0 then no intersection and if outputs intersection it gives specfic cord output aswell as a boolean which can determine
-            //if it can move, and if it cant adjusts by some degree of p  
-            //saves memory? idno
-
-            for(int i = 1; i < b.Length; i++)
-            {
-                if ((a.GetCorners()[0].X <= b[i].GetCorners()[1].X && a.GetCorners()[0].X >= b[i].GetCorners()[0].X) || (a.GetCorners()[1].X <= b[i].GetCorners()[1].X && a.GetCorners()[1].X >= b[i].GetCorners()[0].X))
-                {
-                    if ((a.GetCorners()[0].Y <= b[i].GetCorners()[1].Y && a.GetCorners()[0].Y >= b[i].GetCorners()[1].Y) || (a.GetCorners()[1].Y <= b[i].GetCorners()[1].Y && a.GetCorners()[1].Y >= b[i].GetCorners()[1].Y))
-                    {
-
-                        isc = true;
-
-                    }
-
-                }
-            
-
-            }
-
-
-            return isc;
-        }
+        
 
 
     }

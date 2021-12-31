@@ -13,7 +13,6 @@ namespace Quesar
         public abstract bool isActive { get; set; }
         public abstract int tileY { get; set; }
         public abstract int tileX { get; set; }
-        public abstract GameCustomClasses.Hitbox hitbox { get; set; }
         public abstract void Draw(SpriteBatch sb);
 
     }

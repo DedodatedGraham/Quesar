@@ -19,7 +19,6 @@ namespace Quesar
         //public engine { get; set; }
         //public parts { get; set; }
         //public turrets { get; set; }
-        protected ShipTile shipTile;
         public GraphicsDevice graphicsDevice { get; set; }
         public OrthographicCamera camera { get; }
         public Texture2D shiptexture { get; set; }
@@ -36,7 +35,6 @@ namespace Quesar
             shield = sh;
             strucInteg = si;
             graphicsDevice = gd;
-            shipTile = new ShipTile(graphicsDevice,xTile, yTile);
             camera = new OrthographicCamera(graphicsDevice);
             spriteBatch = new SpriteBatch(gd);
             //this.engine = en;

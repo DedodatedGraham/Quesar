@@ -18,7 +18,6 @@ namespace Quesar
 
         public const int render = 10;
 
-        protected MapTile mapTile;
         public GraphicsDevice graphicsDevice { get; set; }
         public OrthographicCamera camera { get; }
 
@@ -28,7 +27,6 @@ namespace Quesar
         //keeps track of elements rendered in
         public List<int> rendered { get; set; }
 
-        public MapTile earthMapTile { get; set; }
         public Map(GraphicsDevice gd,int xSize, int ySize,string name,ContentManager c)
         {
             mapName = name;
@@ -39,10 +37,8 @@ namespace Quesar
 
             mapStage = 0;
 
-            mapTile = new MapTile(gd, 300, 300);
 
             //Loading in EarthMap Tiles & buildings
-            earthMapTile = new MapTile(graphicsDevice, xSize, ySize);
             earthBuildings = new MapElement[1];
             earthBuildings[0] = new GameCustomClasses.Building(c.Load<Texture2D>("JuliosV1"),1,1,20,20);
             //loading whatever is the next map
@@ -65,7 +61,6 @@ namespace Quesar
                     universe[mapStage-1][rendered[i]].Draw(sp);
                     i++;
                 }
-                mapTile.Draw(sp);
             }
 
 
