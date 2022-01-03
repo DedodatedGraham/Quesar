@@ -101,6 +101,7 @@ namespace Quesar
         
         public Vector2 getDirection(KeyboardState kb)
         {
+            int sprint = 1;
             Vector2 ret = new Vector2();
             if(kb.IsKeyDown(Keys.W))
             {
@@ -118,7 +119,11 @@ namespace Quesar
             {
                 ret += Vector2.UnitX;
             }
-            return ret * speed;
+            if (kb.IsKeyDown(Keys.LeftShift))
+            {
+                sprint = 10;
+            }
+            return ret * speed * sprint;
         }
         public Vector2 getPos()
         {

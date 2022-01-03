@@ -116,7 +116,7 @@ namespace Quesar
             
 
 
-            gameMap.update(new Vector2(thisPlayer.x,thisPlayer.y));
+            gameMap.update();
 
             //PlayerMovement
             if(thisPlayer.isActive)
