@@ -103,7 +103,7 @@ namespace Quesar
        public void Draw(SpriteBatch sb)
         {
             
-            sb.DrawRectangle(boundary, Color.Blue);
+            
             if (isDivided)
             {
                 northEast.Draw(sb);
@@ -116,6 +116,7 @@ namespace Quesar
                 {
                     sb.DrawPoint(points[i].X, points[i].Y, Color.Black,2);
                 }
+                sb.DrawRectangle(boundary, Color.Blue);
             }
             
 

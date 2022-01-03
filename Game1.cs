@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System;
+using MonoGame.Extended.ViewportAdapters;
 
 namespace Quesar
 {
@@ -37,7 +38,9 @@ namespace Quesar
         public Texture2D charDisplayBox;
         public Texture2D defaulSkin;
 
-        public OrthographicCamera camera;
+        //Camera
+        private OrthographicCamera _camera;
+
 
         //compnents to making the testShip
         private int lastScroll;
@@ -67,6 +70,9 @@ namespace Quesar
 
 
             base.Initialize();
+
+            var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+            _camera = new OrthographicCamera(viewportAdapter);
         }
 
         protected override void LoadContent()
@@ -91,9 +97,7 @@ namespace Quesar
 
             thisPlayer = new Player(_graphics,GraphicsDevice, defaulSkin, "temp");
 
-            camera = new OrthographicCamera(GraphicsDevice);
-            // Inform Myra that external text input is available
-            // So it stops translating Keys to chars
+           
 
 
 
@@ -105,20 +109,21 @@ namespace Quesar
             {
                 Exit();
             }
-                
+
 
             // TODO: Add your update logic here
-
-            //This updates Camera movement to the testship.
+            //Camera Movement
             
-            zooom = 0.2f;
+
+
             gameMap.update(new Vector2(thisPlayer.x,thisPlayer.y));
 
             //PlayerMovement
             if(thisPlayer.isActive)
             {
                 thisPlayer.updatePlayer(Keyboard.GetState());
-                camera.Move(thisPlayer.getPos());
+                _camera.Move(thisPlayer.getDirection(Keyboard.GetState()));
+                
             }
 
             //ui stage logic
@@ -160,11 +165,11 @@ namespace Quesar
         {
             GraphicsDevice.Clear(Color.White);
 
-            // TODO: Add your drawing code here
-            var viewMatrix = camera.GetViewMatrix();
-            _spriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointWrap,null,null,null, viewMatrix);
-            
+            var transformMatrix = _camera.GetViewMatrix();
 
+            _spriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointWrap, transformMatrix: transformMatrix);
+
+            _spriteBatch.DrawRectangle(new RectangleF(0, 0, 100, 100), Color.Pink, 10);
             //This is the background and always the last thing on the screen, 
 
             if(uiStage != 111)
@@ -238,8 +243,10 @@ namespace Quesar
 
 
         }
+
         
-        
+
+
 
 
     }

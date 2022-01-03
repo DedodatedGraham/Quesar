@@ -22,8 +22,8 @@ namespace Quesar
 
         public int speed { get; set; }
         public int world { get; set; }
-        public int x { get; set; }
-        public int y { get; set; }
+        public float x { get; set; }
+        public float y { get; set; }
         public Rectangle rectangle { get; set; }
        
         //things to do with the players ships
@@ -55,7 +55,8 @@ namespace Quesar
             skin = con;
             x = gdm.PreferredBackBufferWidth/2-skin.Width/2;
             y = gdm.PreferredBackBufferHeight / 2 - skin.Height / 2;
-            rectangle = new Rectangle(x,y,skin.Width,skin.Height);
+            
+            rectangle = new Rectangle((int)x,(int)y,skin.Width,skin.Height);
 
             
 
@@ -95,27 +96,29 @@ namespace Quesar
 
         public void updatePlayer(KeyboardState keyboard)
         {
-            getMove(keyboard);
         }
 
-        public void getMove(KeyboardState kb)
+        
+        public Vector2 getDirection(KeyboardState kb)
         {
-            if (kb.IsKeyDown(Keys.W))
+            Vector2 ret = new Vector2();
+            if(kb.IsKeyDown(Keys.W))
             {
-                y = y - speed;
+                ret -= Vector2.UnitY;
             }
             if (kb.IsKeyDown(Keys.S))
             {
-                y = y + speed;
+                ret += Vector2.UnitY;
             }
             if (kb.IsKeyDown(Keys.A))
             {
-                x = x - speed;
+                ret -= Vector2.UnitX;
             }
             if (kb.IsKeyDown(Keys.D))
             {
-                x = x + speed;
+                ret += Vector2.UnitX;
             }
+            return ret * speed;
         }
         public Vector2 getPos()
         {
