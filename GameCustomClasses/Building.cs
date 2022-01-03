@@ -16,8 +16,6 @@ namespace Quesar.GameCustomClasses
 
         public string name { get; set; }
 
-        public override int tileX { get; set; }
-        public override int tileY { get; set; }
 
         public override bool isActive { get; set; }
         public Rectangle rectangle { get; set; }
@@ -27,11 +25,7 @@ namespace Quesar.GameCustomClasses
             skin = sk;
 
 
-            tileX = x;
-            tileY = y;
-
-
-            rectangle = new Rectangle(tileX*32,tileY*32, skin.Width*2, skin.Height*2);
+            
 
 
 

@@ -21,9 +21,7 @@ namespace Quesar
         public GraphicsDevice graphicsDevice { get; set; }
         public OrthographicCamera camera { get; }
 
-        public MapElement[][] universe { get; set; }
-        public MapElement[] earthBuildings { get; set; }
-
+        
         //keeps track of elements rendered in
         public List<int> rendered { get; set; }
 
@@ -39,13 +37,10 @@ namespace Quesar
 
 
             //Loading in EarthMap Tiles & buildings
-            earthBuildings = new MapElement[1];
-            earthBuildings[0] = new GameCustomClasses.Building(c.Load<Texture2D>("JuliosV1"),1,1,20,20);
             //loading whatever is the next map
 
 
-            universe = new MapElement[1][];
-            universe[0] = earthBuildings;
+            
 
             rendered = new List<int>();
         }
@@ -58,15 +53,14 @@ namespace Quesar
                 int i = 0;
                 while (i < rendered.Count)
                 {
-                    universe[mapStage-1][rendered[i]].Draw(sp);
-                    i++;
+                    
                 }
             }
 
 
         }
 
-        public void update(Vector2 playerTile)
+        public void update()
         {
 
             int rL = 40;
@@ -74,23 +68,6 @@ namespace Quesar
             int i = 0;
             if(mapStage != 0)
             {
-                while (i < universe[mapStage - 1].Length)
-                {
-                    bool shouldActive = (playerTile.X - universe[mapStage - 1][i].tileX <= rL && playerTile.X - universe[mapStage - 1][i].tileX >= -rL) && (playerTile.Y - universe[mapStage - 1][i].tileY <= rL && playerTile.Y - universe[mapStage - 1][i].tileY >= -rL);
-                    //Checks if active & shouldnt be
-                    if (universe[mapStage - 1][i].isActive && !shouldActive)
-                    {
-                        universe[mapStage - 1][i].isActive = false;
-                        rendered.Remove(i);
-                    }
-                    //checks if not active & should be
-                    if (!universe[mapStage - 1][i].isActive && shouldActive)
-                    {
-                        universe[mapStage - 1][i].isActive = true;
-                        rendered.Add(i);
-                    }
-                    i++;
-                }
             }
             
 
