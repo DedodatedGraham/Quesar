@@ -14,7 +14,7 @@ namespace Quesar.GameCustomClasses
 
         public Texture2D skin { get; set; }
 
-        public string name { get; set; }
+        public override string name { get; set; }
 
 
         public override bool isActive { get; set; }

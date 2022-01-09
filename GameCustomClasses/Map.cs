@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -12,50 +13,32 @@ namespace Quesar
 {
     public class Map
     {
-        public string mapName;
-
+        //universe is a matrix, each of a world with its own containing of all the different quadtrees 
+        //4 types per map with a
+        //Player point(moving with hitbox)
+        //Mapelement point(static with hitbox)
+        //effect point(moving no hitbox)
+        //background point(static no hitbox)
+        public QuadTree[][] universe { get; set; }
         public int mapStage { get; set; }
+        public bool hasSave { get; set; }
+        public string saveLocation { get; set; }
 
-        public const int render = 10;
-
-        public GraphicsDevice graphicsDevice { get; set; }
-        public OrthographicCamera camera { get; }
-
-        
-        //keeps track of elements rendered in
-        public List<int> rendered { get; set; }
+        public List<MapElement> things { get; set; }
 
         public Map(GraphicsDevice gd,int xSize, int ySize,string name,ContentManager c)
         {
-            mapName = name;
-
-            graphicsDevice = gd;
             
-            camera = new OrthographicCamera(graphicsDevice);
-
-            mapStage = 0;
-
-
-            //Loading in EarthMap Tiles & buildings
-            //loading whatever is the next map
 
 
             
 
-            rendered = new List<int>();
         }
 
         public void Draw(SpriteBatch sp)
         {
             //Draws anything that is rendered into the game on the given map that is supposed to be rendered
-            if(mapStage != 0)
-            {
-                int i = 0;
-                while (i < rendered.Count)
-                {
-                    
-                }
-            }
+            
 
 
         }
@@ -63,12 +46,9 @@ namespace Quesar
         public void update()
         {
 
-            int rL = 40;
+           
             //Rendering Logic Goes Here, Updates the Rendering with what is turning active/not and adjusting the rendered list to cointain only the building/obj
-            int i = 0;
-            if(mapStage != 0)
-            {
-            }
+           
             
 
 

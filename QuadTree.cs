@@ -100,6 +100,20 @@ namespace Quesar
 
         }
 
+        public void removePoints(List<Point> pts,List<String> str)
+        {
+            for(int i = 0; i<pts.Count; i++)
+            {
+                if (str[i] == type)
+                {
+                    //removes points that are specific to the quadtree, might take off type on this one but might make it easier to check here vs somewhere else when each thign is loaded/unloaded
+                    points.Remove(pts[i]);
+                }
+            }
+            
+
+        }
+
        public void Draw(SpriteBatch sb)
         {
             

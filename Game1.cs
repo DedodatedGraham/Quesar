@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using System;
 using MonoGame.Extended.ViewportAdapters;
 
 namespace Quesar
@@ -32,8 +31,8 @@ namespace Quesar
 
 
 
-        private Texture2D background;
-        private Texture2D altbackground;
+        public Texture2D background;
+        public Texture2D altbackground;
         public Texture2D buttonv1;
         public Texture2D charDisplayBox;
         public Texture2D defaulSkin;
