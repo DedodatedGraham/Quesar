@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
+using System.Xml.Serialization;
 
 namespace Quesar
 {
@@ -16,6 +17,7 @@ namespace Quesar
         //kinda lazy rn and dont wana recode for events, so waiting is 1 of 3 numbers(0 = do nothing/no need, 1 = has been clicked and now waiting for trigger, 2 = done being typed)
         //guess this will work?
         public int isWaiting1 { get; set; }
+        public int wtm { get; set; }
 
 
         public Map currentMap { get; set; }
@@ -24,6 +26,7 @@ namespace Quesar
         public TextBox box { get; set; }
         public string location { get; set; }
         public string saveName { get; set; }
+        public string loadName { get; set; }
 
         public string currentdown;
         public string lastdown;
@@ -40,13 +43,14 @@ namespace Quesar
             words = "";
             lastback = new GameTime();
             box = new TextBox(gd, gdm.PreferredBackBufferWidth / 2 - btn1.Width / 2, gdm.PreferredBackBufferHeight / 2 - btn1.Height / 2, btn1.Width, btn1.Height, 20, "FileName", btn1, false);
-
+           
 
             isWaiting1 = 0;
 
             //
-            location = @"C:\Users\graha\source\repos\Quesar\Data";
+            location = @"C:\Users\graha\source\repos\Quesar\Data\";
             saveName = "";
+            loadName = "";
 
             //UiElements for the actual Base tools for the map editor
             tools = new UiElement[2];
@@ -92,8 +96,8 @@ namespace Quesar
 
         public void Update(GameTime gameTime)
         {
-            //Save dialog box checker/ only pops up if no 
-            if (box.isClicked())
+            //Save dialog box checker/ only pops up if no // typing logic starter
+            if (box.isClicked() && box.isActive)
             {
                 box.isTyping = true;
             }
@@ -102,47 +106,107 @@ namespace Quesar
                 if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (Mouse.GetState().LeftButton == ButtonState.Pressed))
                 {
                     box.isTyping = false;
-                    saveName = box.typed;
                     box.isActive = false;
-                    isWaiting1 = 2;
+                    if (wtm == 2)
+                    {
+                        saveName = box.typed;
+                        isWaiting1 = 2;
+                    }
+                    if (wtm == 1)
+                    {
+                        loadName = box.typed;
+                        isWaiting1 = 1;
+                    }
                 }
                     box.typed = GetKeys(gameTime);
 
             }
+             
 
             //SaveMapButton
             if (tools[1].isClicked())
             {
-                box.isActive = true;
-                isWaiting1 = 1;
+                //is waiting value 1 is when active but save isnt ready yet
+                if(currentMap.hasSave == false)
+                {
+                    box.isActive = true;
+                    isWaiting1 = 0;
+                    wtm = 2;
+                }
+                else
+                {
+                    isWaiting1 = 2;
+                }
             }
+            //LoadMapButton
+            if (tools[0].isClicked())
+            {
+                box.isActive = true;
+                wtm = 1;
+            }
+
+            //if already has name then it will pass straight through
             if (isWaiting1 == 2)
             {
-                SaveMap(gameTime);
+                SaveMap();
                 isWaiting1 = 0;
+                wtm = 0;
+            }
+            if(isWaiting1 == 1)
+            {
+                LoadMap();
+                isWaiting1 = 0;
+                wtm = 0;
             }
 
         }
 
+
+        //should be sorta working save and load functions now using save,load,encode,and decode
         public void LoadMap()
         {
-            
+            currentMap = Decoder<Map>(loadName);
+            loadName = "";
         }
 
-        public void SaveMap(GameTime gameTime)
+        public void SaveMap()
         {
+            //need to work on this logic when back
+            if (currentMap.saveName == "" && location == @"C:\Users\graha\source\repos\Quesar\Data\")
+            {
+                currentMap.saveName = saveName;
+                location = location + saveName + ".txt";
+                currentMap.saveLocation = location;
+            }
 
+            Encoder(currentMap);
+
+            saveName = "";
         }
 
-        public void Loadqts()
+
+        
+        
+        public void Encoder<T>(T data)
         {
-
+            XmlSerializer serializer =new XmlSerializer(typeof(T));
+            TextWriter writer = new StreamWriter(location);
+            serializer.Serialize(writer,data);
+            writer.Close();
         }
-
-        public void Saveqts(GameTime gameTime)
+        public T Decoder<T>(string input)
+        where T : class
         {
+            XmlSerializer ser = new XmlSerializer(typeof(T));
 
+            using (StringReader sr = new StringReader(input))
+            {
+                return (T)ser.Deserialize(sr);
+            }
+                
         }
+
+
 
         public string GetKeys(GameTime gameTime)
         {

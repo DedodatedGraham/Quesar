@@ -155,7 +155,7 @@ namespace Quesar
 
         public int UpdateManager(GameTime gameTime,int curUiStage)
         {
-            
+            //Start menu update / checks what is clicked
             if(curUiStage == 0)
             {
                 if (startMenu[0].isClicked())
@@ -183,7 +183,7 @@ namespace Quesar
             }
 
 
-
+            //checks if text box is clicked
             if(curUiStage == 11)
             {
                 if (charCreateMenu[0].isClicked())

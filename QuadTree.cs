@@ -13,10 +13,13 @@ namespace Quesar
     {
         //This referes to if the quad tree in Question will be static or no
         public bool isStatic { get; set; }
-        public bool isDivided { get; set; }
-        public List<Point> points { get; set; }
-        public List<string> types { get; set; }
+        private bool isDivided { get; set; }
+        public List<MyPoint> points { get; set; }
 
+        //recursion limiter
+        private const int limit = 10;
+        private int times;
+        private const int pointMax = 10;
         //So each point will have a type
         public string type { get; set; }
         public Rectangle boundary { get; set; }
@@ -27,94 +30,190 @@ namespace Quesar
         public QuadTree northWest { get; set; }
 
 
-        public QuadTree(List<Point> pts, List<string> typ, string tp, Rectangle bounds)
+        //markers for upperlevel reccursion to know if something moved/changed
+
+        private bool hasChanged { get; set; }
+
+        //as of now the quadtree can build its self initially, can use recursion to only store the right kind of points throughout the entire
+        //next step is to make the quad tree be able to update & maintain its own form & structure
+        public QuadTree(List<MyPoint> pts, Rectangle bounds,string t)
         {
-            points = new List<Point>();
-            type = tp;
+            times = 0;
             boundary = bounds;
+            type = t;
             //Now we go through and add in applicable points into the quad tree if it applies
-            applyPoints(pts, typ);
             //sub divide if the tree needs it
-            subDivide();
-            
+            pts = sort(pts);
+            subDivide(pts);
         }
-        public QuadTree(List<Point> pts,Rectangle bounds)
+        //recursive constructor, prevents stack overflow?
+        private QuadTree(List<MyPoint> pts, Rectangle bounds, string t,int time)
         {
-            points = pts;
+            times = time + 1;
             boundary = bounds;
-            //sub divide if needed
-            subDivide();
+            type = t;
+            //Now we go through and add in applicable points into the quad tree if it applies
+            //sub divide if the tree needs it
+            pts = sort(pts);
+            subDivide(pts);
         }
 
 
-        public void update()
+        
+
+        //base initialization functions
+        private List<MyPoint> sort(List<MyPoint> pts)
         {
+            if (pts[0].sorted == false)
+            {
+                List<MyPoint> a = new List<MyPoint>();
+                for(int i = 0;i< pts.Count; i++)
+                {
+                    if (pts[i].type == type)
+                    {
+                        pts[i].sorted = true;
+                        a.Add(pts[i]);
+                    }
+                }
+                return a;
+            }
+            else
+            {
+                return pts;
+            }
 
         }
-        public void subDivide()
+        private void addPoints(List<MyPoint> pts)
         {
-            if(points.Count >= 4)
+            for(int i = 0; i < pts.Count; i++)
+            {
+                points.Add(pts[i]);
+            }
+        }
+        private void subDivide(List<MyPoint> pts)
+        {
+            if (pts.Count >= pointMax && times < limit)
             {
                 isDivided = true;
-                List<Point> ne = new List<Point>();
-                List<Point> se = new List<Point>();
-                List<Point> sw = new List<Point>();
-                List<Point> nw = new List<Point>();
-                for(int i = 0; i< points.Count; i++)
+                List<MyPoint> ne = new List<MyPoint>();
+                List<MyPoint> se = new List<MyPoint>();
+                List<MyPoint> sw = new List<MyPoint>();
+                List<MyPoint> nw = new List<MyPoint>();
+                for (int i = 0; i < pts.Count; i++)
                 {
-                    if(points[i].X >= boundary.Center.X && points[i].Y <= boundary.Center.Y)
+                    if (pts[i].X >= boundary.Center.X && pts[i].Y <= boundary.Center.Y)
                     {
-                        ne.Add(points[i]);
+                        ne.Add(pts[i]);
                     }
-                    if (points[i].X >= boundary.Center.X && points[i].Y > boundary.Center.Y)
+                    if (pts[i].X >= boundary.Center.X && pts[i].Y > boundary.Center.Y)
                     {
-                        se.Add(points[i]);
+                        se.Add(pts[i]);
                     }
-                    if (points[i].X < boundary.Center.X && points[i].Y > boundary.Center.Y)
+                    if (pts[i].X < boundary.Center.X && pts[i].Y > boundary.Center.Y)
                     {
-                        sw.Add(points[i]);
+                        sw.Add(pts[i]);
                     }
-                    if (points[i].X < boundary.Center.X && points[i].Y <= boundary.Center.Y)
+                    if (pts[i].X < boundary.Center.X && pts[i].Y <= boundary.Center.Y)
                     {
-                        nw.Add(points[i]);
+                        nw.Add(pts[i]);
                     }
                 }
-                northEast = new QuadTree(ne, new Rectangle(boundary.X + boundary.Width/2,boundary.Y,boundary.Width/2,boundary.Height/2));
-                southEast = new QuadTree(se, new Rectangle(boundary.X + boundary.Width / 2, boundary.Y + boundary.Height/2, boundary.Width / 2, boundary.Height / 2));
-                southWest = new QuadTree(sw, new Rectangle(boundary.X , boundary.Y + boundary.Height / 2, boundary.Width / 2, boundary.Height / 2));
-                northWest = new QuadTree(nw, new Rectangle(boundary.X, boundary.Y , boundary.Width / 2, boundary.Height / 2));
+                northEast = new QuadTree(ne, new Rectangle(boundary.X + boundary.Width / 2, boundary.Y, boundary.Width / 2, boundary.Height / 2), type, times);
+                southEast = new QuadTree(se, new Rectangle(boundary.X + boundary.Width / 2, boundary.Y + boundary.Height / 2, boundary.Width / 2, boundary.Height / 2), type, times);
+                southWest = new QuadTree(sw, new Rectangle(boundary.X, boundary.Y + boundary.Height / 2, boundary.Width / 2, boundary.Height / 2), type, times);
+                northWest = new QuadTree(nw, new Rectangle(boundary.X, boundary.Y, boundary.Width / 2, boundary.Height / 2), type, times);
             }
-
-        }
-
-        public void applyPoints(List<Point> pts, List<string> str)
-        {
-            for(int i = 0; i< pts.Count; i++)
+            else
             {
-                if(str[i] == type)
-                {
-                    //only needs to add points once defined as the correct type in the correct quadtree
-                    points.Add(pts[i]);
-                }
+                addPoints(pts);
             }
 
         }
 
-        public void removePoints(List<Point> pts,List<String> str)
+
+
+        //recursive functions(exclube sub divide from this list because this controlls logic)
+        private void applyPoint(MyPoint pt)
+        {
+            //apply points will spread out and add in points 
+            if (isDivided)
+            {
+                // recurrsively finds the lowest sector to find the lowest point in which it is divided
+                if (pt.X >= boundary.Center.X && pt.Y <= boundary.Center.Y)
+                {
+                    northEast.applyPoint(pt);
+                    hasChanged = true;
+                }
+                if (pt.X >= boundary.Center.X && pt.Y > boundary.Center.Y)
+                {
+                    southEast.applyPoint(pt);
+                    hasChanged = true;
+                }
+                if (pt.X < boundary.Center.X && pt.Y > boundary.Center.Y)
+                {
+                    southWest.applyPoint(pt);
+                    hasChanged = true;
+                }
+                if (pt.X < boundary.Center.X && pt.Y <= boundary.Center.Y)
+                {
+                    northWest.applyPoint(pt);
+                    hasChanged = true;
+                }
+            }
+            else{
+                points.Add(pt);
+                hasChanged = true;
+            }
+            
+        }
+
+        private bool Check()
+        {
+            if (!isDivided)
+            {
+                //undivided & changed
+                if (hasChanged)
+                {
+                    //needs to check that max's have not been met 
+                    if (points.Count >= pointMax && times < limit)
+                    {
+                        // we can use sub divide to send out all points into new lower quad trees with the correct divided sequences
+                        subDivide(points);
+                        //points is set to nothing again because points speciffically  
+                        points = new List<MyPoint>();
+                        return true;
+                    }
+                }
+            }
+            else
+            {
+                //this will run through check recusivly until the change has been found, and keep track of any reordering that needs to be done
+                if (hasChanged)
+                {
+                    bool needsReorder = Check();
+
+
+
+                }
+            }
+                
+           
+        }
+        private void removePoints(List<MyPoint> pts)
         {
             for(int i = 0; i<pts.Count; i++)
             {
-                if (str[i] == type)
-                {
-                    //removes points that are specific to the quadtree, might take off type on this one but might make it easier to check here vs somewhere else when each thign is loaded/unloaded
-                    points.Remove(pts[i]);
-                }
+                points.Remove(pts[i]);
             }
-            
-
         }
 
-       public void Draw(SpriteBatch sb)
+        public void update()
+        {
+            Check();
+
+
+        }
+        public void Draw(SpriteBatch sb)
         {
             
             
@@ -134,6 +233,21 @@ namespace Quesar
             }
             
 
+        }
+    }
+
+    public class MyPoint
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public string type {get; set;}
+        public bool sorted { get; set; }
+        public MyPoint(int x, int y, string t)
+        {
+            X = x;
+            Y = y;
+            type = t;
+            sorted = false;
         }
     }
 

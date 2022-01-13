@@ -13,40 +13,46 @@ namespace Quesar
 {
     public class Map
     {
-        //universe is a matrix, each of a world with its own containing of all the different quadtrees 
-        //4 types per map with a
-        //Player point(moving with hitbox)
-        //Mapelement point(static with hitbox)
-        //effect point(moving no hitbox)
-        //background point(static no hitbox)
-        public QuadTree[][] universe { get; set; }
-        public int mapStage { get; set; }
+
+        //we will use a quad tree to store the center point of every object to make rendering super quick, rather than checking through everything
+        //itll only open up objects which have their own predefined hitboxes& everything else 
+        //This should work by having a quad tree with the points of objects and making each object have a quad tree array in it with all nessicary information?:)
+        string worldName { get; set; }
+        public QuadTree worldObjects { get; set; }
+        public List<MapElement> mapElements { get; set;}
+        public List<MapElement> rendered { get; set; }
+
+        public Rectangle boundary { get; set; }
         public bool hasSave { get; set; }
         public string saveLocation { get; set; }
-
-        public List<MapElement> things { get; set; }
+        public string saveName { get; set; }
 
         public Map(GraphicsDevice gd,int xSize, int ySize,string name,ContentManager c)
         {
-            
+            rendered = new List<MapElement>();
+            mapElements = new List<MapElement>();
+
+            worldName = name;
+            boundary = new Rectangle(-xSize / 2, -ySize / 2, xSize, ySize);
 
 
             
-
+            worldObjects = new QuadTree(new List<Point>(), boundary);
         }
 
         public void Draw(SpriteBatch sp)
         {
-            //Draws anything that is rendered into the game on the given map that is supposed to be rendered
-            
+            for(int i = 0; i < rendered.Count; i++)
+            {
+                rendered[i].Draw(sp);
+            }
 
 
         }
 
-        public void update()
-        {
 
-           
+        public void update(Vector2 playerPos)
+        {  
             //Rendering Logic Goes Here, Updates the Rendering with what is turning active/not and adjusting the rendered list to cointain only the building/obj
            
             
@@ -62,6 +68,7 @@ namespace Quesar
         public void Hits()
         {
             //Hitbox dection
+
            
         }
     }

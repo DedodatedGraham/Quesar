@@ -18,7 +18,7 @@ namespace Quesar
 
         public bool gameRun;
 
-
+        
         public int camMovementSpeed;
         public float zooom;
         
