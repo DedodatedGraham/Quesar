@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -111,7 +113,59 @@ namespace Quesar
 
         private void loadRendered(MyPoint nw, MyPoint sw, MyPoint ne, MyPoint se)
         {
+            //gathers location of all needed objects
             List<MyPoint> loaded = worldObjects.gatherNear(nw,sw,ne,se);
+            List<MapElement> temp = new List<MapElement>();
+
+            int orgIndex = 0;
+            //goes through and finds all the sam elements at the front end to keep
+            for(int i = 0;i<loaded.Count;i++)
+            {
+                if(loaded[i].X == rendered[i].location.X && loaded[i].Y == rendered[i].location.Y)
+                {
+                    orgIndex++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+
+            //now needs to scan for rendered objects that shouldnt be, and unrendered objects that should be
+            
+            if(orgIndex != loaded.Count - 1)
+            {
+
+                //checks if the wanted 
+                for (int i = 0; i < loaded.Count; i++){
+                    
+                }
+
+
+                rendered = (List<MapElement>)rendered.GetRange(0, orgIndex).Concat(temp);
+
+            }
+
+            //if theres nothing rendered it will set its self to loaded
+            if (rendered.Count == 0)
+            {
+                for (int i = 0; i < loaded.Count; i++)
+                {
+                    rendered.Add(getElement(loaded[i]));
+                }
+            }
+
+        }
+
+        private void initializeElements()
+        {
+            
+
+        }
+
+        private MapElement getElement(MyPoint point)
+        {
 
         }
     }

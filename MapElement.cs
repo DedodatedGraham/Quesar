@@ -11,7 +11,9 @@ namespace Quesar
     abstract public class MapElement
     {
         public abstract bool isActive { get; set; }
-        public abstract string name { get; set; }
+        public abstract string id { get; set; }
+        public abstract string type { get; set; }
+        public abstract MyPoint location { get; set; }
         public abstract void Draw(SpriteBatch sb);
 
     }

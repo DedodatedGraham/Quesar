@@ -535,6 +535,7 @@ namespace Quesar
                     {
                         if (points[i].Y >= nw.Y && points[i].Y <= se.Y)
                         {
+                            points[i].rendered = true;
                             ret.Add(points[i]);
                         }
 
@@ -557,6 +558,8 @@ namespace Quesar
         public string type {get; set;}
         public bool sorted { get; set; }
 
+        public bool rendered { get; set; }
+
         public string id { get; set; }
         public MyPoint(int x, int y, string t)
         {
@@ -565,6 +568,19 @@ namespace Quesar
             type = t;
             sorted = false;
             id = "";
+        }
+
+        public bool Equals(MyPoint test)
+        {
+            if (test.X == X && test.Y == Y)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
         }
     }
 
