@@ -21,7 +21,7 @@ namespace Quesar
         //recursion limiter
         private const int limit = 10;
         private int times;
-        private const int pointMax = 10;
+        private int pointMax;
         //So each point will have a type
         public string type { get; set; }
         public Rectangle boundary { get; set; }
@@ -70,6 +70,7 @@ namespace Quesar
         private QuadTree(List<MyPoint> pts, Rectangle bounds, string t,int time,string name)
         {
             times = time + 1;
+            pointMax = limit * times;
             boundary = bounds;
             type = t;
             //Now we go through and add in applicable points into the quad tree if it applies
