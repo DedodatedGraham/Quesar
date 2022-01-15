@@ -53,12 +53,14 @@ namespace Quesar
                 // then in update logic we can sense if its clicekd and what happens if it is. so this is more of the design and layout part of the uimanager in which there will only be one 
                 //Im thinking just about 10 pixels worth of space between each button on the main menu?
                 startMenu = new UiElement[3];
-                startMenu[0] = new Button( gd, (gdm.PreferredBackBufferWidth/2) - 50,(gdm.PreferredBackBufferHeight/2) - 85,100,50,"Start",skin1,true);
+                startMenu[0] = new Button( gd, (gdm.PreferredBackBufferWidth/2) - 50, (gdm.PreferredBackBufferHeight/2) - 85,100,50,"Start",skin1,true);
                 startMenu[1] = new Button(gd, (gdm.PreferredBackBufferWidth/2) - 50, (gdm.PreferredBackBufferHeight/2) - 25, 100, 50, "Options", skin1, true);
                 startMenu[2] = new Button(gd, (gdm.PreferredBackBufferWidth / 2) - 50, (gdm.PreferredBackBufferHeight / 2) + 35, 100, 50, "Exit Game", skin1, true);
             
                 //Option buttons 
-                optionMenu = new Button[1];
+                optionMenu = new UiElement[2];
+                optionMenu[0] = new Button(gd, 50, 50, 100, 50, "Start Map Editor",skin1,false);
+                optionMenu[1] = new Button(gd, 4000, 4000, 100, 50, "blah", skin1, false);
                 
 
                 //CreateChar 
@@ -76,7 +78,7 @@ namespace Quesar
             {
                 DrawStartMenu (sp,font);
             }
-            if(curUiStage == 2)
+            if(curUiStage == 21)
             {
                 DrawOptionsMenu(sp,font);
             }
@@ -95,7 +97,6 @@ namespace Quesar
             int i = 0;
             while (i < startMenu.Length)
             {
-                startMenu[i].isActive = true;
                 startMenu[i].Draw(sp, font);
                 i++;
             }
@@ -105,7 +106,6 @@ namespace Quesar
             int i = 0;
             while (i < optionMenu.Length)
             {
-                optionMenu[i].isActive = true;
                 optionMenu[i].Draw(sp, font);
                 i++;
             }
@@ -120,9 +120,29 @@ namespace Quesar
             int i = 0;
             while (i < charCreateMenu.Length)
             {
-                charCreateMenu[i].isActive = true;
                 charCreateMenu[i].Draw(sp, font);
                 i++;
+            }
+        }
+        public void ActiveStartMenu()
+        {
+            for(int i = 0; i < startMenu.Length; i++)
+            {
+                startMenu[i].isActive = true;
+            }
+        }
+        public void ActiveOptionsMenu()
+        {
+            for (int i = 0; i < optionMenu.Length; i++)
+            {
+                optionMenu[i].isActive = true;
+            }
+        }
+        public void ActiveCharCreate()
+        {
+            for (int i = 0; i < charCreateMenu.Length; i++)
+            {
+                charCreateMenu[i].isActive = true;
             }
         }
         public void ClearCharCreate()
@@ -160,23 +180,26 @@ namespace Quesar
             {
                 if (startMenu[0].isClicked())
                 {
-                    Task.Delay(250);
+                    //start menu
+                    Task.Delay(500);
 
                     ClearStartMenu();
+                    ActiveCharCreate();
                     return 11;
                 }
                 if (startMenu[1].isClicked())
                 {
                     //Goes to option menu
-                    Task.Delay(250);
+                    Task.Delay(500);
 
                     ClearStartMenu();
+                    ActiveOptionsMenu();
                     return 21;
                 }
                 if (startMenu[2].isClicked())
                 {
                     //Exits
-                    Task.Delay(250);
+                    Task.Delay(500);
                     ClearStartMenu();
                     return 3;
                 }
@@ -212,6 +235,15 @@ namespace Quesar
 
             }
             
+            //options menu updates
+            if(curUiStage == 21)
+            {
+                if (optionMenu[0].isClicked())
+                {
+                    ClearOptionsMenu();
+                    return 22;
+                }
+            }
             return curUiStage;
             
 
@@ -221,7 +253,7 @@ namespace Quesar
 
         }
 
-
+        
         public string GetKeys(GameTime gameTime)
         {
 

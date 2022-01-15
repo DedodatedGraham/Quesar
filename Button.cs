@@ -19,6 +19,7 @@ namespace Quesar
 
         //for determining if the button is on screen
         public override bool isActive { get; set; }
+        public override bool state { get; set ; }
 
         public GraphicsDevice _graphcis;
         public Texture2D buttonSkin { get; set; }
@@ -39,6 +40,7 @@ namespace Quesar
 
             words = word;
 
+            state = false;
             //creates the sprite batch for this Button
             
         }
@@ -67,8 +69,13 @@ namespace Quesar
 
         public override bool isClicked()
         {
-            if ((Mouse.GetState().LeftButton == ButtonState.Pressed) && (isHovering()))
+            if (Mouse.GetState().LeftButton == ButtonState.Released)
             {
+                state = false;
+            }
+            if ((Mouse.GetState().LeftButton == ButtonState.Pressed) && (isHovering()) && !state)
+            {
+                state = true;
                 return true;
             }
 
@@ -77,7 +84,7 @@ namespace Quesar
 
         }
 
-        public bool isHovering()
+        public override bool isHovering()
         {
             if(Mouse.GetState().X > xCord && Mouse.GetState().X < (xCord + width) && Mouse.GetState().Y > yCord && Mouse.GetState().Y < (yCord + height))
             {

@@ -13,7 +13,10 @@ namespace Quesar
 
         
         public abstract bool isActive { get; set; }
+        public abstract bool state { get; set; }
         public abstract void Draw(SpriteBatch sb,SpriteFont sf);
+        public abstract bool isHovering();
+        
 
         public abstract bool isClicked();
 

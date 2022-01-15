@@ -31,6 +31,8 @@ namespace Quesar
         public QuadTree southWest { get; set; }
         public QuadTree northWest { get; set; }
 
+        public bool hasOver { get; set; }
+
 
         //markers for upperlevel reccursion to know if something moved/changed
 
@@ -51,6 +53,19 @@ namespace Quesar
             pts = sort(pts);
             subDivide(pts);
         }
+        
+        //makes blank quad tree
+        public QuadTree()
+        {
+            isStatic = true;
+            isDivided = false;
+            points = new List<MyPoint>();
+            
+            
+            times = 0;
+            boundary = new Rectangle(100, 100, 10000, 10000);
+            subDivide(points);
+        }
         //recursive constructor, prevents stack overflow?
         private QuadTree(List<MyPoint> pts, Rectangle bounds, string t,int time,string name)
         {
@@ -70,24 +85,30 @@ namespace Quesar
         //base initialization functions
         private List<MyPoint> sort(List<MyPoint> pts)
         {
-            if (pts[0].sorted == false)
+            if (pts.Count != 0)
             {
-                List<MyPoint> a = new List<MyPoint>();
-                for(int i = 0;i< pts.Count; i++)
+                if (pts[0].sorted == false)
                 {
-                    if (pts[i].type == type || pts[i].type == "")
+                    List<MyPoint> a = new List<MyPoint>();
+                    for (int i = 0; i < pts.Count; i++)
                     {
-                        pts[i].sorted = true;
-                        a.Add(pts[i]);
+                        if (pts[i].type == type || pts[i].type == "")
+                        {
+                            pts[i].sorted = true;
+                            a.Add(pts[i]);
+                        }
                     }
+                    return a;
                 }
-                return a;
+                else
+                {
+                    return pts;
+                }
             }
             else
             {
-                return pts;
+                return new List<MyPoint>();
             }
-
         }
         private void addPoints(List<MyPoint> pts)
         {
@@ -137,9 +158,14 @@ namespace Quesar
                 southEast = new QuadTree(se, new Rectangle(boundary.X + boundary.Width / 2, boundary.Y + boundary.Height / 2, boundary.Width / 2, boundary.Height / 2), type, times,"SouthEast");
                 southWest = new QuadTree(sw, new Rectangle(boundary.X, boundary.Y + boundary.Height / 2, boundary.Width / 2, boundary.Height / 2), type, times,"SouthWest");
                 northWest = new QuadTree(nw, new Rectangle(boundary.X, boundary.Y, boundary.Width / 2, boundary.Height / 2), type, times,"NorthWest");
+                points = new List<MyPoint>();
             }
             else
             {
+                if(times >= limit)
+                {
+                    hasOver = true;
+                }
                 addPoints(pts);
             }
 
@@ -149,10 +175,23 @@ namespace Quesar
         {
             isDivided = false;
             List<MyPoint> thing = new List<MyPoint>();
-            thing.Concat(northEast.points);
-            thing.Concat(northWest.points);
-            thing.Concat(southEast.points);
-            thing.Concat(southWest.points);
+            if(!(northEast.points is null))
+            {
+                thing.Concat(northEast.points);
+            }
+            if (!(northWest.points is null))
+            {
+                thing.Concat(northWest.points);
+            }
+            if (!(southEast.points is null))
+            {
+                thing.Concat(southEast.points);
+            }
+            if (!(southWest.points is null))
+            {
+                thing.Concat(southWest.points);
+            }
+            
             northEast = null;
             northWest = null;
             southEast = null;
@@ -163,7 +202,7 @@ namespace Quesar
 
         //recursive functions(exclube sub divide from this list because this controlls logic)
         //speciffically apply and remove point will recurssivly add in or remove a point to the propper location
-        private void applyPoint(MyPoint pt)
+        public void applyPoint(MyPoint pt)
         {
             //apply points will spread out and add in points 
             if (isDivided)
@@ -190,15 +229,28 @@ namespace Quesar
                     hasChanged = true;
                 }
             }
-            else{
-                points.Add(pt);
+            else
+            {
+                if(!(points is null)){
+                    points.Add(pt);
+                }
+                else
+                {
+                    points = new List<MyPoint>();
+                    points.Add(pt);
+                }
+                
                 hasChanged = true;
             }
             
         }
 
-        private void removePoint(MyPoint pt)
+        public void removePoint(MyPoint pt)
         {
+            if(!(points is null) && points.Count >= pointMax )
+            {
+                hasOver = true;
+            }
             if (isDivided)
             {
                 if (pt.X >= boundary.Center.X && pt.Y <= boundary.Center.Y)
@@ -240,19 +292,27 @@ namespace Quesar
 
         public int getCount()
         {
-            int count = 0;
-            if (isDivided)
+            if (!(points is null))
             {
-                count += northEast.getCount();
-                count += northWest.getCount();
-                count += southEast.getCount();
-                count += southWest.getCount();
+                int count = 0;
+                if (isDivided)
+                {
+                    count += northEast.getCount();
+                    count += northWest.getCount();
+                    count += southEast.getCount();
+                    count += southWest.getCount();
+                }
+                else
+                {
+                    count = count + points.Count;
+                }
+                return count;
             }
             else
             {
-                count = count + points.Count;
+                return 0;
             }
-            return count;
+            
         }
         public List<string> indexBounds(MyPoint pt)
         {
@@ -393,9 +453,10 @@ namespace Quesar
                 //if divided & changed it needds to make sure it doesnt need to undivide aswell aka if the points fall u8nder the limit it should undo, and it should only have to do that once
                 if (hasChanged)
                 {
-                    if(getCount() < pointMax)
+                    if(getCount() < pointMax && hasOver)
                     {
                         unDivide();
+                        hasOver = false;
                     }
 
                 }
@@ -443,12 +504,13 @@ namespace Quesar
             
             if (isDivided)
             {
+                sb.DrawRectangle(boundary, Color.Blue);
                 northEast.Draw(sb);
                 southEast.Draw(sb);
                 southWest.Draw(sb);
                 northWest.Draw(sb);
             }
-            if (!isDivided) {
+            if (!isDivided && !(points is null)) {
                 for (int i = 0; i < points.Count; i++)
                 {
                     sb.DrawPoint(points[i].X, points[i].Y, Color.Black,2);

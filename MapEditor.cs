@@ -24,9 +24,13 @@ namespace Quesar
 
         public UiElement[] tools { get; set; }
         public TextBox box { get; set; }
-        public string location { get; set; }
         public string saveName { get; set; }
         public string loadName { get; set; }
+
+        public int id { get; set; }
+
+        public bool curentMesh { get; set; }
+        private bool mouseState;
 
         public string currentdown;
         public string lastdown;
@@ -35,30 +39,40 @@ namespace Quesar
 
         //so the map editor will have a way to set all quadtrees to each individual assets such as hitbox and stuff liek that
         //as well as it will have a way in which the map can be designed efficiently 
-        public MapEditor(GraphicsDevice gd, Texture2D btn1, Texture2D btn2, GraphicsDeviceManager gdm)
+
+        //random idea for map editor, but have a section for world building and then a section for object meshing,
+        //aka when meshing objects you can click where you want points/lines and it will auto make and format everything for in game stuff that sucks to hard code, where as the actual object data can be adjusted by me
+
+        public MapEditor(GraphicsDevice gd, Texture2D btn1, Texture2D btn2, GraphicsDeviceManager gdm,ContentManager c)
         {
             //needed for typing
             currentdown = "";
             lastdown = "";
             words = "";
             lastback = new GameTime();
-            box = new TextBox(gd, gdm.PreferredBackBufferWidth / 2 - btn1.Width / 2, gdm.PreferredBackBufferHeight / 2 - btn1.Height / 2, btn1.Width, btn1.Height, 20, "FileName", btn1, false);
-           
 
+            box = new TextBox(gd, gdm.PreferredBackBufferWidth / 2 - btn1.Width / 2, gdm.PreferredBackBufferHeight / 2 - btn1.Height / 2, btn1.Width, btn1.Height, 20, "FileName", btn1, false);
+
+            mouseState = false;
             isWaiting1 = 0;
 
             //
-            location = @"C:\Users\graha\source\repos\Quesar\Data\";
             saveName = "";
             loadName = "";
+            curentMesh = false;
 
             //UiElements for the actual Base tools for the map editor
-            tools = new UiElement[2];
-            tools[0] = new Button(gd, 0, gdm.PreferredBackBufferHeight - btn1.Height, btn1.Width, btn1.Height, "Load Map", btn1, false);
-            tools[1] = new Button(gd, btn1.Width, gdm.PreferredBackBufferHeight - btn1.Height, btn1.Width, btn1.Height, "Save Map", btn1, false);
+            tools = new UiElement[3];
+            tools[0] = new Button(gd, 0, gdm.PreferredBackBufferHeight - 2 * btn1.Height, btn1.Width, btn1.Height, "Load Map", btn1, false);
+            tools[1] = new Button(gd, btn1.Width, gdm.PreferredBackBufferHeight - 2 * btn1.Height, btn1.Width, btn1.Height, "Save Map", btn1, false);
+            tools[2] = new ToggleButton(gd, btn1.Width * 2, gdm.PreferredBackBufferHeight - 2 * btn1.Height, btn1.Width, btn1.Height, "Mesh", btn1, false);
 
+            id = 0;
             
-            
+
+            currentMap = new Map(c);
+
+            ToolsOn();
         }
 
         public void Draw(SpriteBatch sb, SpriteFont sf)
@@ -75,7 +89,7 @@ namespace Quesar
             {
                 box.Draw(sb, sf);
             }
-
+            currentMap.Draw(sb);
         }
 
         public void ToolsOn()
@@ -94,8 +108,12 @@ namespace Quesar
             }
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime,Vector2 playerPos)
         {
+            if(Mouse.GetState().LeftButton == ButtonState.Released)
+            {
+                mouseState = false;
+            }
             //Save dialog box checker/ only pops up if no // typing logic starter
             if (box.isClicked() && box.isActive)
             {
@@ -121,7 +139,6 @@ namespace Quesar
                     box.typed = GetKeys(gameTime);
 
             }
-             
 
             //SaveMapButton
             if (tools[1].isClicked())
@@ -159,6 +176,38 @@ namespace Quesar
                 wtm = 0;
             }
 
+
+            //update data for drawing in quad tree points
+            //note, currently set up for the map quad tree for testing
+            if (tools[2].isClicked())
+            {
+                if (curentMesh)
+                {
+                    curentMesh = false;
+                }
+                else
+                {
+                    curentMesh = true;
+                }
+            }
+            if (curentMesh)
+            {
+                //makes sure the thing can be turned on & off so wont make bunch of points when trying to change it
+                if((Mouse.GetState().LeftButton == ButtonState.Pressed) && !(tools[2].isHovering()) && !mouseState)
+                {
+                    MyPoint now = new MyPoint(Mouse.GetState().X, Mouse.GetState().Y, "location");
+                    now.id = id.ToString();
+                    id++;
+                    //set to map not the future object implementation
+                    currentMap.worldObjects.applyPoint(now);
+                    mouseState = true;
+                }
+            }
+            if(currentMap.worldObjects.getCount() > 0)
+            {
+                currentMap.update(playerPos,100);
+            }
+
         }
 
 
@@ -172,14 +221,12 @@ namespace Quesar
         public void SaveMap()
         {
             //need to work on this logic when back
-            if (currentMap.saveName == "" && location == @"C:\Users\graha\source\repos\Quesar\Data\")
+            if (currentMap.saveName == "")
             {
                 currentMap.saveName = saveName;
-                location = location + saveName + ".txt";
-                currentMap.saveLocation = location;
             }
 
-            Encoder(currentMap);
+            Encoder(currentMap,currentMap.saveName);
 
             saveName = "";
         }
@@ -187,13 +234,14 @@ namespace Quesar
 
         
         
-        public void Encoder<T>(T data)
+        public void Encoder<T>(T data,string location)
         {
-            XmlSerializer serializer =new XmlSerializer(typeof(T));
+            XmlSerializer serializer = new XmlSerializer(typeof(T));
             TextWriter writer = new StreamWriter(location);
             serializer.Serialize(writer,data);
             writer.Close();
         }
+
         public T Decoder<T>(string input)
         where T : class
         {

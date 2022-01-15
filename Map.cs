@@ -28,11 +28,16 @@ namespace Quesar
         public bool hasSave { get; set; }
         public string saveLocation { get; set; }
         public string saveName { get; set; }
+        private Texture2D julios;
+        private ContentManager content { get; set; }
 
         public Map(GraphicsDevice gd,int xSize, int ySize,string name,ContentManager c)
         {
+            content = c;
             rendered = new List<MapElement>();
             mapElements = new List<MapElement>();
+
+            julios = c.Load<Texture2D>("JuliosV1");
 
             worldName = name;
             boundary = new Rectangle(-xSize / 2, -ySize / 2, xSize, ySize);
@@ -61,9 +66,26 @@ namespace Quesar
 
         }
 
+        public Map(ContentManager c)
+        {
+            julios = c.Load<Texture2D>("JuliosV1");
+            rendered = new List<MapElement>();
+            mapElements = new List<MapElement>();
+            
+            boundary = new Rectangle(100,100,10000,10000);
+            worldObjects = new QuadTree();
+        }
+
         public void Draw(SpriteBatch sp)
         {
 
+            //temp for displaying the map quad tree
+            if(worldObjects.getCount() != 0)
+            {
+
+                worldObjects.Draw(sp);
+            }
+            //
 
             for(int i = 0; i < rendered.Count; i++)
             {
@@ -113,47 +135,69 @@ namespace Quesar
         private void loadRendered(MyPoint nw, MyPoint sw, MyPoint ne, MyPoint se)
         {
             //gathers location of all needed objects
-            List<MyPoint> loaded = worldObjects.gatherNear(nw,sw,ne,se);
+            List<MyPoint> loaded = new List<MyPoint>();
+            loaded = worldObjects.gatherNear(nw,sw,ne,se);
             List<MapElement> temp = new List<MapElement>();
 
             int orgIndex = 0;
-            //goes through and finds all the sam elements at the front end to keep
-            for(int i = 0;i<loaded.Count;i++)
+            //will skip if there is nothing to be loaded
+            if (loaded.Count != 0)
             {
-                if(loaded[i].X == rendered[i].location.X && loaded[i].Y == rendered[i].location.Y)
+                //goes through and finds all the sam elements at the front end to keep
+                for (int i = 0; i < rendered.Count; i++)
                 {
-                    orgIndex++;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-
-            //now needs to scan for rendered objects that shouldnt be, and unrendered objects that should be
-            
-            if(orgIndex < loaded.Count)
-            {
-                //this will now run through each element which isnt the same from the beggining 
-                //org index will keep it from needing to look at the first same elements
-                for (int i = orgIndex; i < loaded.Count; i++){
-                    for(int j = orgIndex; j < rendered.Count; j++)
+                    if (i < loaded.Count)
                     {
-                        //this will keep elements that exist in rendered already to just be added back into the rendered
-                        if (loaded[i].id == rendered[j].location.id)
+                        if (loaded[i].X == rendered[i].location.X && loaded[i].Y == rendered[i].location.Y && loaded[i].id == rendered[i].location.id)
                         {
-                            temp.Add(rendered[j]);
+                            orgIndex++;
+                        }
+                        else
+                        {
                             break;
                         }
-                        if (j == rendered.Count-1)
+                    }
+
+                }
+
+
+                //now needs to scan for rendered objects that shouldnt be, and unrendered objects that should be
+
+                if (orgIndex < loaded.Count)
+                {
+                    //this will now run through each element which isnt the same from the beggining 
+                    //org index will keep it from needing to look at the first same elements
+                    for (int i = orgIndex; i < loaded.Count; i++)
+                    {
+                        for (int j = 0; j < rendered.Count; j++)
                         {
-                            temp.Add(getElement(loaded[i]));
+                            //this will keep elements that exist in rendered already to just be added back into the rendered
+                            if (loaded[i].id == rendered[j].location.id)
+                            {
+                                temp.Add(rendered[j]);
+                                break;
+                            }
+                            if (j == rendered.Count - 1)
+                            {
+                                temp.Add(getElement(loaded[i]));
+                            }
                         }
                     }
+                    if (orgIndex != 0)
+                    {
+                        rendered = (List<MapElement>)rendered.GetRange(0, orgIndex - 1);
+                        for(int i = 0;i< temp.Count; i++)
+                        {
+                            rendered.Add(temp[i]);
+                        }
+                    }
+                    else
+                    {
+                        rendered = temp;
+                    }
                 }
-                rendered = (List<MapElement>)rendered.GetRange(0, orgIndex).Concat(temp);
             }
+            
             //if its bigger it wont change becaause that will mean its the same rendered so it stays
             //and if its both 0 itll catch it below
             
@@ -181,9 +225,10 @@ namespace Quesar
         private MapElement getElement(MyPoint point)
         {
             //this will search through the point data base and send out a properly formatted MapElement
+            Building juli = new Building(julios, new Rectangle(point.X - julios.Width/2,point.Y - julios.Height/2, julios.Height, julios.Width),true,new List<QuadTree>());
+            juli.location = point;
             
-
-
+            return juli;
         }
     }
 }

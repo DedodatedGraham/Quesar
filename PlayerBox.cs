@@ -15,6 +15,7 @@ namespace Quesar
         public int width { get; set; }
         public int height { get; set; }
 
+        public override bool state { get; set; }
 
         public override bool isActive { get; set; }
 
@@ -32,6 +33,7 @@ namespace Quesar
             BackSkin = border;
             playerSkin = skin;
             isActive = isA;
+            state = false;
         }
 
         public override void Draw(SpriteBatch sb, SpriteFont sf)
@@ -49,8 +51,13 @@ namespace Quesar
 
         public override bool isClicked()
         {
-            if ((Mouse.GetState().LeftButton == ButtonState.Pressed) && (isHovering()))
+            if (Mouse.GetState().LeftButton == ButtonState.Released)
             {
+                state = false;
+            }
+            if ((Mouse.GetState().LeftButton == ButtonState.Pressed) && (isHovering()) && !state)
+            {
+                state = true;
                 return true;
             }
 
@@ -59,7 +66,7 @@ namespace Quesar
 
         }
 
-        public bool isHovering()
+        public override bool isHovering()
         {
             if (Mouse.GetState().X > xCord && Mouse.GetState().X < (xCord + width) && Mouse.GetState().Y > yCord && Mouse.GetState().Y < (yCord + height))
             {

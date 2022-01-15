@@ -17,6 +17,7 @@ namespace Quesar
 
         public int maxLength { get; set; }
 
+        public override bool state { get; set; }
         public string words { get; set; }
         public string typed { get; set; }
 
@@ -45,6 +46,7 @@ namespace Quesar
             typed = "test";
             isTyping = false;
 
+            state = false;
 
 
         }
@@ -97,7 +99,9 @@ namespace Quesar
 
         public override bool isClicked()
         {
-            if ((Mouse.GetState().LeftButton == ButtonState.Pressed) && (isHovering()))
+            
+
+            if ((Mouse.GetState().LeftButton == ButtonState.Pressed) && (isHovering()) )
             {
                 return true;
             }
@@ -107,7 +111,7 @@ namespace Quesar
 
         }
 
-        public bool isHovering()
+        public override bool isHovering()
         {
             if (Mouse.GetState().X > xCord && Mouse.GetState().X < (xCord + width) && Mouse.GetState().Y > yCord && Mouse.GetState().Y < (yCord + height))
             {

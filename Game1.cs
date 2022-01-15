@@ -21,13 +21,18 @@ namespace Quesar
         
         public int camMovementSpeed;
         public float zooom;
+
+        private bool editActive;
         
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         public int uiStage;
         public UiManager _uiManager;
 
-        public Map gameMap;
+
+
+
+        public MapEditor editor;
 
 
 
@@ -63,7 +68,7 @@ namespace Quesar
 
             uiStage = 0;
 
-            
+            editActive = false;
 
 
 
@@ -91,12 +96,13 @@ namespace Quesar
             defaulSkin = Content.Load<Texture2D>("DefaultCharV1");
 
             _uiManager = new UiManager(GraphicsDevice, buttonv1,charDisplayBox, _graphics,defaulSkin);
-            gameMap = new Map(GraphicsDevice,100,100,"gameMap",Content);
 
 
             thisPlayer = new Player(_graphics,GraphicsDevice, defaulSkin, "temp");
 
-           
+            editor = new MapEditor(GraphicsDevice, buttonv1, charDisplayBox, _graphics,Content);
+
+
 
 
 
@@ -104,16 +110,12 @@ namespace Quesar
 
         protected override void Update(GameTime gameTime)
         {
-            if (uiStage == 3)
+
+            //editor update that runs if its active
+            if (editActive)
             {
-                Exit();
+                editor.Update(gameTime,new Vector2());
             }
-
-
-            // TODO: Add your update logic here
-            //Camera Movement
-            
-
 
 
             //PlayerMovement
@@ -124,35 +126,25 @@ namespace Quesar
                 
             }
 
-            //ui stage logic
-           switch(_uiManager.UpdateManager(gameTime, uiStage))
+            //keeps track & sends ui stage info back and fourth
+            //ui will run unless turned off
+            if(uiStage != -1)
             {
-                case 0:
-                    uiStage = 0;
-                    break;
-                case 1:
-                    uiStage = 1;
-                    break;
-                case 11:
-                    uiStage = 11;
-                    break;
-                case 111:
-                    gameRun = true;
-                    thisPlayer.name = _uiManager.outputNewPlayer;
-                    uiStage = 111;
-                    //Make sure to update this for getting a players location and spawning in last map
-                    thisPlayer.isActive = true;
-                    break;
+                uiStage = _uiManager.UpdateManager(gameTime, uiStage);
 
-                case 2:
-                    uiStage = 2;
-                    break;
+                if (uiStage == 3)
+                {
+                    Exit();
+                }
 
-                case 3:
-                    uiStage = 3;
-                    break;
-
+                if (uiStage == 22)
+                {
+                    loadEditor();
+                    // turns off ui system
+                    uiStage = -1;
+                }
             }
+            
 
 
             base.Update(gameTime);
@@ -166,20 +158,25 @@ namespace Quesar
 
             _spriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointWrap, transformMatrix: transformMatrix);
 
+            //Test object for positioning 
             _spriteBatch.DrawRectangle(new RectangleF(0, 0, 100, 100), Color.Pink, 10);
-            //This is the background and always the last thing on the screen, 
 
-            if(uiStage != 111)
+            //draws ui stage things if active
+            if(uiStage != 111 && uiStage != -1)
             {
                 _spriteBatch.Draw(getUiStageBackground(), new Vector2(0, 0), Color.White);
+                _uiManager.Draw(_spriteBatch, publicFont, uiStage);
+            }
+
+            if (editActive)
+            {
+                editor.Draw(_spriteBatch, publicFont);
             }
             
            
+
+
             
-            _uiManager.Draw(_spriteBatch, publicFont, uiStage);
-
-
-            gameMap.Draw(_spriteBatch);
 
 
             //Heres the ui menu drawing
@@ -230,8 +227,12 @@ namespace Quesar
                     return altbackground;
                 case 11:
                     return altbackground;
+                case 21:
+                    return altbackground;
                 case 111:
                     return altbackground;
+
+                
 
 
             }
@@ -239,6 +240,11 @@ namespace Quesar
 
 
 
+        }
+        private void loadEditor()
+        {
+            
+            editActive = true;
         }
 
         
