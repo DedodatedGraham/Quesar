@@ -115,7 +115,6 @@ namespace Quesar
             
 
 
-            gameMap.update();
 
             //PlayerMovement
             if(thisPlayer.isActive)
@@ -142,7 +141,6 @@ namespace Quesar
                     thisPlayer.name = _uiManager.outputNewPlayer;
                     uiStage = 111;
                     //Make sure to update this for getting a players location and spawning in last map
-                    gameMap.mapStage = thisPlayer.world;
                     thisPlayer.isActive = true;
                     break;
 

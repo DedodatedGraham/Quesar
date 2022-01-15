@@ -43,13 +43,6 @@ namespace Quesar
         //next step is to make the quad tree be able to update & maintain its own form & structure
         public QuadTree(List<MyPoint> pts, Rectangle bounds,string t)
         {
-            if (pts[0].id == "")
-            {
-                for(int i = 0; i < pts.Count; i++)
-                {
-                    pts[i].id = i.ToString();
-                }
-            }
             times = 0;
             boundary = bounds;
             type = t;
@@ -82,7 +75,7 @@ namespace Quesar
                 List<MyPoint> a = new List<MyPoint>();
                 for(int i = 0;i< pts.Count; i++)
                 {
-                    if (pts[i].type == type)
+                    if (pts[i].type == type || pts[i].type == "")
                     {
                         pts[i].sorted = true;
                         a.Add(pts[i]);
@@ -164,6 +157,7 @@ namespace Quesar
             northWest = null;
             southEast = null;
             southWest = null;
+            
             points = thing; 
         }
 
@@ -171,10 +165,6 @@ namespace Quesar
         //speciffically apply and remove point will recurssivly add in or remove a point to the propper location
         private void applyPoint(MyPoint pt)
         {
-            if(times == 0)
-            {
-                pt.id = getCount().ToString();
-            }
             //apply points will spread out and add in points 
             if (isDivided)
             {

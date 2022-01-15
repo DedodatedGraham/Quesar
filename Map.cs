@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
@@ -100,7 +99,7 @@ namespace Quesar
             MyPoint SouthEast = new MyPoint(curbounds.X + curbounds.Width, curbounds.Y + curbounds.Height, "render");
 
             //now with corners set we need to group every object with eachother thats in those bounds
-
+            //this will update the mapelements "rendered" to be correct so now the rendered just needs to be drawn and it will auto maintain
             loadRendered(NorthWest,SouthWest,NorthEast,SouthEast);
 
         }
@@ -134,18 +133,33 @@ namespace Quesar
 
             //now needs to scan for rendered objects that shouldnt be, and unrendered objects that should be
             
-            if(orgIndex != loaded.Count - 1)
+            if(orgIndex < loaded.Count)
             {
-
-                //checks if the wanted 
-                for (int i = 0; i < loaded.Count; i++){
-                    
+                //this will now run through each element which isnt the same from the beggining 
+                //org index will keep it from needing to look at the first same elements
+                for (int i = orgIndex; i < loaded.Count; i++){
+                    for(int j = orgIndex; j < rendered.Count; j++)
+                    {
+                        //this will keep elements that exist in rendered already to just be added back into the rendered
+                        if (loaded[i].id == rendered[j].location.id)
+                        {
+                            temp.Add(rendered[j]);
+                            break;
+                        }
+                        if (j == rendered.Count-1)
+                        {
+                            temp.Add(getElement(loaded[i]));
+                        }
+                    }
                 }
-
-
                 rendered = (List<MapElement>)rendered.GetRange(0, orgIndex).Concat(temp);
-
             }
+            //if its bigger it wont change becaause that will mean its the same rendered so it stays
+            //and if its both 0 itll catch it below
+            
+            
+
+            
 
             //if theres nothing rendered it will set its self to loaded
             if (rendered.Count == 0)
@@ -166,6 +180,9 @@ namespace Quesar
 
         private MapElement getElement(MyPoint point)
         {
+            //this will search through the point data base and send out a properly formatted MapElement
+            
+
 
         }
     }
