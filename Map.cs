@@ -62,7 +62,7 @@ namespace Quesar
             }
 
             //side note for later make sure the empty list works, could potentially be a problem but could just work fine
-            worldObjects = new QuadTree(new List<MyPoint>(), boundary, "objects");
+            worldObjects = new QuadTree(new List<MyPoint>(), boundary, "location");
 
         }
 
@@ -72,7 +72,16 @@ namespace Quesar
             rendered = new List<MapElement>();
             mapElements = new List<MapElement>();
             
-            boundary = new Rectangle(100,100,10000,10000);
+            boundary = new Rectangle(0,0,1000,1000);
+            worldObjects = new QuadTree();
+        }
+
+        public Map()
+        {
+            rendered = new List<MapElement>();
+            mapElements = new List<MapElement>();
+
+            boundary = new Rectangle(0, 0, 1000, 1000);
             worldObjects = new QuadTree();
         }
 
@@ -141,7 +150,7 @@ namespace Quesar
 
             int orgIndex = 0;
             //will skip if there is nothing to be loaded
-            if (loaded.Count != 0)
+            if (!(loaded is null) && loaded.Count != 0)
             {
                 //goes through and finds all the sam elements at the front end to keep
                 for (int i = 0; i < rendered.Count; i++)

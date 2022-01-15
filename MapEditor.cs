@@ -233,7 +233,7 @@ namespace Quesar
 
 
         
-        
+        //need to work on saving and loading now
         public void Encoder<T>(T data,string location)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(T));

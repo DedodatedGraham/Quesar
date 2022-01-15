@@ -40,18 +40,20 @@ namespace Quesar
 
 
 
-
-        //as of now the quadtree can build its self initially, can use recursion to only store the right kind of points throughout the entire
-        //next step is to make the quad tree be able to update & maintain its own form & structure
+        //quad tree works well at maintaining itsself and extending it if needed, null lists suck but most of it should be good
+        //still some more things to implement like a quad tree which stores the order of points and is able to draw lines betwee, for best hitbox's and movement this
+        //should help move clusters over a quad tree with out having to worry about other points in the same tree
+        
         public QuadTree(List<MyPoint> pts, Rectangle bounds,string t)
         {
             times = 0;
             boundary = bounds;
             type = t;
+            pointMax = limit * (times + 1);
             //Now we go through and add in applicable points into the quad tree if it applies
             //sub divide if the tree needs it
-            pts = sort(pts);
-            subDivide(pts);
+            points = sort(pts);
+            subDivide();
         }
         
         //makes blank quad tree
@@ -60,23 +62,23 @@ namespace Quesar
             isStatic = true;
             isDivided = false;
             points = new List<MyPoint>();
-            
+            type = "location";
             
             times = 0;
-            boundary = new Rectangle(100, 100, 10000, 10000);
-            subDivide(points);
+            pointMax = limit * (times + 1);
+            boundary = new Rectangle(0, 0, 1000, 1000);
         }
         //recursive constructor, prevents stack overflow?
         private QuadTree(List<MyPoint> pts, Rectangle bounds, string t,int time,string name)
         {
             times = time + 1;
-            pointMax = limit * times;
+            pointMax = limit * (times + 1);
             boundary = bounds;
             type = t;
             //Now we go through and add in applicable points into the quad tree if it applies
             //sub divide if the tree needs it
-            pts = sort(pts);
-            subDivide(pts);
+            points = sort(pts);
+            subDivide();
             location = name;
         }
 
@@ -99,6 +101,7 @@ namespace Quesar
                             a.Add(pts[i]);
                         }
                     }
+
                     return a;
                 }
                 else
@@ -127,49 +130,52 @@ namespace Quesar
             }
         }
         
-        private void subDivide(List<MyPoint> pts)
+        private void subDivide()
         {
-            if (pts.Count >= pointMax && times < limit)
+            if(!(points is null) && !(points.Count == 0))
             {
-                isDivided = true;
-                List<MyPoint> ne = new List<MyPoint>();
-                List<MyPoint> se = new List<MyPoint>();
-                List<MyPoint> sw = new List<MyPoint>();
-                List<MyPoint> nw = new List<MyPoint>();
-                for (int i = 0; i < pts.Count; i++)
-                {
-                    if (pts[i].X >= boundary.Center.X && pts[i].Y <= boundary.Center.Y)
-                    {
-                        ne.Add(pts[i]);
-                    }
-                    if (pts[i].X >= boundary.Center.X && pts[i].Y > boundary.Center.Y)
-                    {
-                        se.Add(pts[i]);
-                    }
-                    if (pts[i].X < boundary.Center.X && pts[i].Y > boundary.Center.Y)
-                    {
-                        sw.Add(pts[i]);
-                    }
-                    if (pts[i].X < boundary.Center.X && pts[i].Y <= boundary.Center.Y)
-                    {
-                        nw.Add(pts[i]);
-                    }
-                }
-                northEast = new QuadTree(ne, new Rectangle(boundary.X + boundary.Width / 2, boundary.Y, boundary.Width / 2, boundary.Height / 2), type, times,"NorthEast");
-                southEast = new QuadTree(se, new Rectangle(boundary.X + boundary.Width / 2, boundary.Y + boundary.Height / 2, boundary.Width / 2, boundary.Height / 2), type, times,"SouthEast");
-                southWest = new QuadTree(sw, new Rectangle(boundary.X, boundary.Y + boundary.Height / 2, boundary.Width / 2, boundary.Height / 2), type, times,"SouthWest");
-                northWest = new QuadTree(nw, new Rectangle(boundary.X, boundary.Y, boundary.Width / 2, boundary.Height / 2), type, times,"NorthWest");
-                points = new List<MyPoint>();
-            }
-            else
-            {
-                if(times >= limit)
-                {
-                    hasOver = true;
-                }
-                addPoints(pts);
-            }
 
+                if (points.Count >= pointMax && times < limit)
+                {
+                    isDivided = true;
+                    List<MyPoint> ne = new List<MyPoint>();
+                    List<MyPoint> se = new List<MyPoint>();
+                    List<MyPoint> sw = new List<MyPoint>();
+                    List<MyPoint> nw = new List<MyPoint>();
+                    for (int i = 0; i < points.Count; i++)
+                    {
+                        if (points[i].X >= boundary.Center.X && points[i].Y <= boundary.Center.Y)
+                        {
+                            ne.Add(points[i]);
+                        }
+                        else if (points[i].X >= boundary.Center.X && points[i].Y > boundary.Center.Y)
+                        {
+                            se.Add(points[i]);
+                        }
+                        else if (points[i].X < boundary.Center.X && points[i].Y > boundary.Center.Y)
+                        {
+                            sw.Add(points[i]);
+                        }
+                        else if (points[i].X < boundary.Center.X && points[i].Y <= boundary.Center.Y)
+                        {
+                            nw.Add(points[i]);
+                        }
+                    }
+                    northEast = new QuadTree(ne, new Rectangle(boundary.X + boundary.Width / 2, boundary.Y, boundary.Width / 2, boundary.Height / 2), type, times, "NorthEast");
+                    southEast = new QuadTree(se, new Rectangle(boundary.X + boundary.Width / 2, boundary.Y + boundary.Height / 2, boundary.Width / 2, boundary.Height / 2), type, times, "SouthEast");
+                    southWest = new QuadTree(sw, new Rectangle(boundary.X, boundary.Y + boundary.Height / 2, boundary.Width / 2, boundary.Height / 2), type, times, "SouthWest");
+                    northWest = new QuadTree(nw, new Rectangle(boundary.X, boundary.Y, boundary.Width / 2, boundary.Height / 2), type, times, "NorthWest");
+                    points = new List<MyPoint>();
+                }
+                else
+                {
+                    if (times >= limit)
+                    {
+                        hasOver = true;
+                    }
+                }
+            }
+            
         }
 
         private void unDivide()
@@ -443,7 +449,7 @@ namespace Quesar
                     if (points.Count >= pointMax && times < limit)
                     {
                         // we can use sub divide to send out all points into new lower quad trees with the correct divided sequences
-                        subDivide(points);
+                        subDivide();
                         //points is set to nothing again because points speciffically  
                         points = new List<MyPoint>();
                     }
@@ -501,11 +507,10 @@ namespace Quesar
         }
         public void Draw(SpriteBatch sb)
         {
-            
-            
+            sb.DrawRectangle(boundary, Color.Blue);
+
             if (isDivided)
             {
-                sb.DrawRectangle(boundary, Color.Blue);
                 northEast.Draw(sb);
                 southEast.Draw(sb);
                 southWest.Draw(sb);
@@ -516,8 +521,9 @@ namespace Quesar
                 {
                     sb.DrawPoint(points[i].X, points[i].Y, Color.Black,2);
                 }
-                sb.DrawRectangle(boundary, Color.Blue);
+                
             }
+            
             
 
         }
