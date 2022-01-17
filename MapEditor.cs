@@ -27,8 +27,6 @@ namespace Quesar
         public string saveName { get; set; }
         public string loadName { get; set; }
 
-        public int id { get; set; }
-
         public bool curentMesh { get; set; }
         private bool mouseState;
 
@@ -67,7 +65,7 @@ namespace Quesar
             tools[1] = new Button(gd, btn1.Width, gdm.PreferredBackBufferHeight - 2 * btn1.Height, btn1.Width, btn1.Height, "Save Map", btn1, false);
             tools[2] = new ToggleButton(gd, btn1.Width * 2, gdm.PreferredBackBufferHeight - 2 * btn1.Height, btn1.Width, btn1.Height, "Mesh", btn1, false);
 
-            id = 0;
+            
             
 
             currentMap = new Map(c);
@@ -196,8 +194,6 @@ namespace Quesar
                 if((Mouse.GetState().LeftButton == ButtonState.Pressed) && !(tools[2].isHovering()) && !mouseState)
                 {
                     MyPoint now = new MyPoint(Mouse.GetState().X, Mouse.GetState().Y, "location");
-                    now.id = id.ToString();
-                    id++;
                     //set to map not the future object implementation
                     currentMap.worldObjects.applyPoint(now);
                     mouseState = true;
@@ -214,7 +210,9 @@ namespace Quesar
         //should be sorta working save and load functions now using save,load,encode,and decode
         public void LoadMap()
         {
-            currentMap = Decoder<Map>(loadName);
+            currentMap.worldObjects = new QuadTree();
+            //LOADING DOESNT WORK RN
+            //currentMap.worldObjects = Decoder<QuadTree>(loadName);
             loadName = "";
         }
 
@@ -226,7 +224,7 @@ namespace Quesar
                 currentMap.saveName = saveName;
             }
 
-            Encoder(currentMap,currentMap.saveName);
+            Encoder(currentMap.worldObjects,currentMap.saveName);
 
             saveName = "";
         }
@@ -234,6 +232,7 @@ namespace Quesar
 
         
         //need to work on saving and loading now
+        // wont work for a map, however we can store quad trees easily, so loading & saving those where they can show the program what to do with what its given is most likely best
         public void Encoder<T>(T data,string location)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(T));

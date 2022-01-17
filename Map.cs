@@ -74,16 +74,9 @@ namespace Quesar
             
             boundary = new Rectangle(0,0,1000,1000);
             worldObjects = new QuadTree();
+            saveName = "";
         }
 
-        public Map()
-        {
-            rendered = new List<MapElement>();
-            mapElements = new List<MapElement>();
-
-            boundary = new Rectangle(0, 0, 1000, 1000);
-            worldObjects = new QuadTree();
-        }
 
         public void Draw(SpriteBatch sp)
         {

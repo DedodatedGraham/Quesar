@@ -16,6 +16,8 @@ namespace Quesar
         public bool isStatic { get; set; }
         private bool isDivided { get; set; }
         public List<MyPoint> points { get; set; }
+
+        
         private string location { get; set; }
 
         //recursion limiter
@@ -33,7 +35,12 @@ namespace Quesar
 
         public bool hasOver { get; set; }
 
+        public int id { get; set; }
 
+        //tracing variables
+        public bool isTracing { get; set; }
+        public List<List<MyPoint>> traces { get; set; }
+        public int traceCount { get; set; }
         //markers for upperlevel reccursion to know if something moved/changed
 
         private bool hasChanged { get; set; }
@@ -46,6 +53,7 @@ namespace Quesar
         
         public QuadTree(List<MyPoint> pts, Rectangle bounds,string t)
         {
+            id = 0;
             times = 0;
             boundary = bounds;
             type = t;
@@ -53,6 +61,7 @@ namespace Quesar
             //Now we go through and add in applicable points into the quad tree if it applies
             //sub divide if the tree needs it
             points = sort(pts);
+            points = idThese(points);
             subDivide();
         }
         
@@ -63,7 +72,7 @@ namespace Quesar
             isDivided = false;
             points = new List<MyPoint>();
             type = "location";
-            
+            id = 0;
             times = 0;
             pointMax = limit * (times + 1);
             boundary = new Rectangle(0, 0, 1000, 1000);
@@ -97,6 +106,7 @@ namespace Quesar
                     {
                         if (pts[i].type == type || pts[i].type == "")
                         {
+                            
                             pts[i].sorted = true;
                             a.Add(pts[i]);
                         }
@@ -114,20 +124,26 @@ namespace Quesar
                 return new List<MyPoint>();
             }
         }
-        private void addPoints(List<MyPoint> pts)
+        private List<MyPoint> idThese(List<MyPoint> pts)
         {
-            for(int i = 0; i < pts.Count; i++)
+            List<MyPoint> temp = new List<MyPoint>();
+            if(!(pts is null))
             {
-                points.Add(pts[i]);
+                for(int i = 0; i < pts.Count; i++)
+                {
+                    if(pts[i].id == "")
+                    {
+                        pts[i].id = id.ToString();
+                        id++;
+                    }
+                    else
+                    {
+                        temp.Add(pts[i]);
+                    }
+                    
+                }
             }
-        }
-
-        private void removePoints(List<MyPoint> pts)
-        {
-            for (int i = 0; i < pts.Count; i++)
-            {
-                points.Remove(pts[i]);
-            }
+            return temp;
         }
         
         private void subDivide()
@@ -209,8 +225,15 @@ namespace Quesar
 
         //recursive functions(exclube sub divide from this list because this controlls logic)
         //speciffically apply and remove point will recurssivly add in or remove a point to the propper location
+
+        //these will work and spread into the function well
         public void applyPoint(MyPoint pt)
         {
+            if(times == 0 && pt.id == "")
+            {
+                pt.id = id.ToString();
+                id++;
+            }
             //apply points will spread out and add in points 
             if (isDivided)
             {
@@ -249,6 +272,57 @@ namespace Quesar
                 
                 hasChanged = true;
             }
+            
+        }
+        public void applyPoints(List<MyPoint> pts)
+        {
+            if(!(pts is null) && pts.Count != 0)
+            {
+                //id's new elements
+                if(times == 0 && pts[0].id == "")
+                {
+                    for(int i = 0; i < pts.Count; i++)
+                    {
+                        pts[i].id = id.ToString();
+                        id++;
+                    }
+                }
+                //then should be able to do the recursion of dumping off into other sectors
+                if (isDivided)
+                {
+                    hasChanged = true;
+
+                }
+                else
+                {
+                    hasChanged = true;
+                    if(!(points is null) && points.Count != 0)
+                    {
+                        for (int i = 0; i < pts.Count; i++)
+                        {
+                            points.Add(pts[i]);
+                        }
+                    }
+                    else
+                    {
+                        if(points.Count == 0)
+                        {
+                            points = pts;
+                        }
+                        else
+                        {
+                            points = new List<MyPoint>();
+                            points = pts;
+                        }
+                    }
+                    
+                    
+                }
+                
+            }
+            
+            
+                
             
         }
 
@@ -606,6 +680,40 @@ namespace Quesar
             return ret;
         }
 
+        //
+        //for the traces for hit box registering, we will have this first function which simpily assigns the points its given values of 
+        //the trace, order and what not
+        public List<MyPoint> makeTrace(List<MyPoint> pts,string name)
+        {
+            List<MyPoint> var = new List<MyPoint>();
+            //elements coming in here will never be empty, so null points shouldnt matter
+            //also wont ever be making a trace with existing points really, only modifying maybe, 
+            //but this trace can be put directly into the add of the list of my points function, savving the trace then adding the points
+            for(int i = 0; i < pts.Count; i++)
+            {
+                pts[i].traceName = name;
+                pts[i].inTrace = true;
+                pts[i].traceOrder = i;
+                var.Add(pts[i]);
+            }
+            traces.Add(var);
+            return var;
+        }
+
+
+
+        //may need update loops to make checks and what not
+        public void traceUpdate()
+        {
+
+        }
+        //drawing the trace
+        public void drawTrace()
+        {
+
+
+        }
+
 
     }
 
@@ -617,14 +725,27 @@ namespace Quesar
         public string type {get; set;}
         public bool sorted { get; set; }
 
+        public string traceName { get; set; }
         public bool rendered { get; set; }
 
         public string id { get; set; }
+        //trace elements
+        public bool inTrace { get; set; }
+        public int traceOrder { get; set; }
+
         public MyPoint(int x, int y, string t)
         {
             X = x;
             Y = y;
             type = t;
+            sorted = false;
+            id = "";
+        }
+        public MyPoint()
+        {
+            X = 0;
+            Y = 0;
+            type = "";
             sorted = false;
             id = "";
         }
