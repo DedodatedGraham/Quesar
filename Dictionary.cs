@@ -26,24 +26,37 @@ namespace Quesar
         //this would be a good place to implement [tags] for object properties then game engine can be passed some information that isnt relevent at the creation or until some event has happened
 
 
-        private string globalPath; 
+        private string globalPath;
 
+        private Data data;
 
         //this is all we theoretically should need to pass it to load in textures as everything else will have a file path stored already
         //we will also send it a string of the file orgin, this will be based on save location
         public Dictionary(ContentManager c,string gp )
         {
             globalPath = gp;
-
-
-
-
+            data = new Data();
+            makeLayers();
         }
 
+        private void makeLayers()
+        {
+
+        }
+        
 
 
+        //this is the section with the actual data
+        private class Data
+        {
+            public Data()
+            {
 
-
-
+            }
+        }
     }
+
+
+    //data is going to be the actual 
+    
 }
