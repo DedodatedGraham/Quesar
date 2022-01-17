@@ -39,7 +39,7 @@ namespace Quesar
 
         //tracing variables
         public bool isTracing { get; set; }
-        public List<List<MyPoint>> traces { get; set; }
+        public List<Polygon> traces { get; set; }
         public int traceCount { get; set; }
         //markers for upperlevel reccursion to know if something moved/changed
 
@@ -226,7 +226,7 @@ namespace Quesar
         //recursive functions(exclube sub divide from this list because this controlls logic)
         //speciffically apply and remove point will recurssivly add in or remove a point to the propper location
 
-        //these will work and spread into the function well
+        //these apply points to their needed place
         public void applyPoint(MyPoint pt)
         {
             if(times == 0 && pt.id == "")
@@ -291,7 +291,45 @@ namespace Quesar
                 if (isDivided)
                 {
                     hasChanged = true;
-
+                    List<MyPoint> ne = new List<MyPoint>();
+                    List<MyPoint> se = new List<MyPoint>();
+                    List<MyPoint> sw = new List<MyPoint>();
+                    List<MyPoint> nw = new List<MyPoint>();
+                    for (int i = 0; i < points.Count; i++)
+                    {
+                        if (points[i].X >= boundary.Center.X && points[i].Y <= boundary.Center.Y)
+                        {
+                            ne.Add(points[i]);
+                        }
+                        else if (points[i].X >= boundary.Center.X && points[i].Y > boundary.Center.Y)
+                        {
+                            se.Add(points[i]);
+                        }
+                        else if (points[i].X < boundary.Center.X && points[i].Y > boundary.Center.Y)
+                        {
+                            sw.Add(points[i]);
+                        }
+                        else if (points[i].X < boundary.Center.X && points[i].Y <= boundary.Center.Y)
+                        {
+                            nw.Add(points[i]);
+                        }
+                    }
+                    if(ne.Count != 0)
+                    {
+                        northEast.applyPoints(ne);
+                    }
+                    if (nw.Count != 0)
+                    {
+                        northWest.applyPoints(nw);
+                    }
+                    if (se.Count != 0)
+                    {
+                        southEast.applyPoints(se);
+                    }
+                    if (sw.Count != 0)
+                    {
+                        southWest.applyPoints(sw);
+                    }
                 }
                 else
                 {
@@ -683,7 +721,7 @@ namespace Quesar
         //
         //for the traces for hit box registering, we will have this first function which simpily assigns the points its given values of 
         //the trace, order and what not
-        public List<MyPoint> makeTrace(List<MyPoint> pts,string name)
+        public Polygon makeTrace(List<MyPoint> pts,string name)
         {
             List<MyPoint> var = new List<MyPoint>();
             //elements coming in here will never be empty, so null points shouldnt matter
@@ -696,11 +734,10 @@ namespace Quesar
                 pts[i].traceOrder = i;
                 var.Add(pts[i]);
             }
-            traces.Add(var);
-            return var;
+            Polygon a = new Polygon(var);
+            traces.Add(a);
+            return a;
         }
-
-
 
         //may need update loops to make checks and what not
         public void traceUpdate()
@@ -708,11 +745,38 @@ namespace Quesar
 
         }
         //drawing the trace
-        public void drawTrace()
+        //might change to something recursive if the traces ever become hefty on processing (applying to all traces)
+        //the points are also stored in the quad tree its self for total object calulations if needed
+        public void DrawTrace(SpriteBatch sb)
         {
+            //this works with out recursion because the points are stored in the highest layer making them easily accesable
+           
+            if(!(traces is null) && traces.Count != 0)
+            {
+                for (int i = 0; i < traces.Count; i++)
+                {
+                    traces[i].Draw(sb);
+                }
 
+            }
+            
 
         }
+        //now i want to be able to input a name of a trace and then get the polyhon of them
+        public Polygon getTraceBounderies(string name)
+        {
+            for(int i = 0; i < traces.Count; i++)
+            {
+                if(traces[i].lines[0].pt1.traceName == name)
+                {
+                    return traces[i];
+                }
+            }
+            return new Polygon();
+            
+            
+        }
+
 
 
     }
@@ -727,7 +791,6 @@ namespace Quesar
 
         public string traceName { get; set; }
         public bool rendered { get; set; }
-
         public string id { get; set; }
         //trace elements
         public bool inTrace { get; set; }
@@ -762,7 +825,395 @@ namespace Quesar
             }
 
         }
+
+        //these can just return themselves as a different object so making things are easier when the point can cast its self according to the x & y
+        public Point toPoint()
+        {
+            return new Point(X, Y);
+        }
+        public Vector2 toVector()
+        {
+            return new Vector2(X, Y);
+        }
     }
 
+    //so basically a line contains 2 points, but it will have functions to adjust it, should only be used as a tempory structure, lines should never be saved in quad tree to prevent data build up
+    //though i could change that opionion depending on how much itll actually take up
+    //could also just change traces to be polygons and write a composition and decomposition function to make it a list of points/ back to polygon
+    public class Line
+    {
+        
+        
+        public MyPoint pt1 { get; set; }
+        public MyPoint pt2 { get; set; }
+        //if direction is needed it can be used
+        public List<string> direction { get; set; }
+        public Line(MyPoint p1, MyPoint p2)
+        {
+            pt1 = p1;
+            pt2 = p2;
+            direction = new List<string>();
+        }
+        public Line()
+        {
+            pt1 = new MyPoint();
+            pt2 = new MyPoint();
+            direction = new List<string>();
+        }
+
+        public bool Intersects(Line test)
+        {
+            //this will retermine if either side of this line falls between either side of the test line, 
+            //returns true if crossing on either side(pt1 & pt2)
+            int dxc1 = pt1.X - test.pt1.X;
+            int dyc1 = pt1.Y - test.pt1.Y;
+            int dxl1 = test.pt2.X - test.pt1.X;
+            int dyl1 = test.pt2.Y - test.pt1.Y;
+            int cross1 = dxc1 * dyl1 - dyc1 * dxl1;
+            int dxc2 = pt2.X - test.pt1.X;
+            int dyc2 = pt2.Y - test.pt1.Y;
+            int dxl2 = test.pt2.X - test.pt1.X;
+            int dyl2 = test.pt2.Y - test.pt1.Y;
+            int cross2 = dxc2 * dyl2 - dyc2 * dxl2;
+            if(cross1 != 0 && cross2 != 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public void Draw(SpriteBatch sb)
+        {
+            sb.DrawLine(pt1.toVector(), pt2.toVector(), Color.Red);
+        }
+        
+
+    }
+    //same goes for the polygons, which are mainly just a list of lines,
     
+
+    //might add in a new empty & not empty variable so if its not empty we can use it to draw textures accoring to any N polygon
+    public class Polygon
+    {
+        public int count;
+        public List<Line> lines { get; set; }
+        // will get the retalive center point of the polygon for finding the direction of the points 
+        public MyPoint center { get; set; }
+        public Polygon(List<MyPoint> pts)
+        {
+            int x = 0;
+            int y = 0;
+            //only point it stores twice is the orgin
+            lines = new List<Line>();
+            for (int i = 0; i < pts.Count; i++)
+            {
+                if (i < pts.Count - 1)
+                {
+                    lines.Add(new Line(pts[i], pts[i + 1]));
+                }
+                else
+                {
+                    lines.Add(new Line(pts[i], pts[0]));
+                }
+                x += pts[i].X;
+                y += pts[i].Y;
+
+
+            }
+            //type center points only exist in polygons for now,
+            center = new MyPoint((int)(x / pts.Count), (int)(y / pts.Count), "center");
+
+
+            //these will just be tags, can contain 4 because 2 points 2 units, can just scan for whatever directions needed
+            for (int i = 0; i < lines.Count; i++)
+            {
+                //the string will basically be pt1 east/west north/south and then pt2 e/w n/s
+                if (lines[i].pt1.X >= center.X)
+                {
+                    lines[i].direction.Add("East");
+                }
+                else
+                {
+                    lines[i].direction.Add("West");
+                }
+                if (lines[i].pt1.Y >= center.Y)
+                {
+                    lines[i].direction.Add("North");
+                }
+                else
+                {
+                    lines[i].direction.Add("South");
+                }
+
+
+                if (lines[i].pt2.X >= center.X)
+                {
+                    lines[i].direction.Add("East");
+                }
+                else
+                {
+                    lines[i].direction.Add("West");
+                }
+                if (lines[i].pt2.Y >= center.Y)
+                {
+                    lines[i].direction.Add("North");
+                }
+                else
+                {
+                    lines[i].direction.Add("South");
+
+                }
+
+            }
+
+            count = lines.Count;
+        }
+        public Polygon()
+        {
+            lines = new List<Line>();
+            count = 0;
+        }
+        public void setPolygon(List<MyPoint> pts)
+        {
+            int x = 0;
+            int y = 0;
+            //only point it stores twice is the orgin
+            lines = new List<Line>();
+            for (int i = 0; i < pts.Count; i++)
+            {
+                if (i < pts.Count - 1)
+                {
+                    lines.Add(new Line(pts[i], pts[i + 1]));
+                }
+                else
+                {
+                    lines.Add(new Line(pts[i], pts[0]));
+                }
+                x += pts[i].X;
+                y += pts[i].Y;
+
+
+            }
+            //type center points only exist in polygons for now,
+            center = new MyPoint((int)(x / pts.Count), (int)(y / pts.Count), "center");
+
+
+            //these will just be tags, can contain 4 because 2 points 2 units, can just scan for whatever directions needed
+            for (int i = 0; i < lines.Count; i++)
+            {
+                //the string will basically be pt1 east/west north/south and then pt2 e/w n/s
+                if (lines[i].pt1.X >= center.X)
+                {
+                    lines[i].direction.Add("East");
+                }
+                else
+                {
+                    lines[i].direction.Add("West");
+                }
+                if (lines[i].pt1.Y >= center.Y)
+                {
+                    lines[i].direction.Add("North");
+                }
+                else
+                {
+                    lines[i].direction.Add("South");
+                }
+
+
+                if (lines[i].pt2.X >= center.X)
+                {
+                    lines[i].direction.Add("East");
+                }
+                else
+                {
+                    lines[i].direction.Add("West");
+                }
+                if (lines[i].pt2.Y >= center.Y)
+                {
+                    lines[i].direction.Add("North");
+                }
+                else
+                {
+                    lines[i].direction.Add("South");
+
+                }
+
+            }
+
+            count = lines.Count;
+        }
+
+        public bool Intersects(Polygon test)
+        {
+            //since 2 polygons will have directions of the lines, we only need to check lines that are between the points
+
+            //we then need to find the min and max points of each y
+
+            
+            Line tempY = new Line();
+            tempY = getMinMaxY();
+            Line tempX = new Line();
+            tempX = getMinMaxX();
+
+            //broad test case, basically sees if they are even close enough to propperly touch, this will allow for accurate hit detection
+            if (tempY.Intersects(test.getMinMaxY()) && tempX.Intersects(test.getMinMaxX()))
+            {
+                //next we will determine the direction of the other polygon from left or right
+                //if this polygon is to the right of the test case
+                if (center.X >= test.center.X)
+                {
+                    List<Line> east = new List<Line>();
+                    List<Line> west = new List<Line>();
+
+                    //if its to the right we want to grab all the lines with any tag east and test them with the test cases west tags
+                    for (int i = 0; i < lines.Count; i++)
+                    {
+                        if (lines[i].direction[0] == "East" || lines[i].direction[3] == "East")
+                        {
+                            east.Add(lines[i]);
+                        }
+                    }
+                    for (int i = 0; i < test.lines.Count; i++)
+                    {
+                        if (test.lines[i].direction[0] == "West" || test.lines[i].direction[3] == "West")
+                        {
+                            west.Add(lines[i]);
+                        }
+                    }
+                    //now we have all the lines that correspond, and can then test them all together 
+
+                    for(int i = 0; i < east.Count; i++)
+                    {
+                        for(int j = 0; j < west.Count; j++)
+                        {
+                            if (east[i].Intersects(west[j]))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+
+                }
+                //if the polygon is to the left of the test case
+                else
+                {
+                    List<Line> east = new List<Line>();
+                    List<Line> west = new List<Line>();
+
+                    //if its to the right we want to grab all the lines with any tag east and test them with the test cases west tags
+                    for (int i = 0; i < lines.Count; i++)
+                    {
+                        if (lines[i].direction[0] == "West" || lines[i].direction[3] == "West")
+                        {
+                            west.Add(lines[i]);
+                        }
+                    }
+                    for (int i = 0; i < test.lines.Count; i++)
+                    {
+                        if (test.lines[i].direction[0] == "East" || test.lines[i].direction[3] == "East")
+                        {
+                            east.Add(lines[i]);
+                        }
+                    }
+                    //now we have all the lines that correspond, and can then test them all together 
+
+                    for (int i = 0; i < east.Count; i++)
+                    {
+                        for (int j = 0; j < west.Count; j++)
+                        {
+                            if (east[i].Intersects(west[j]))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+
+                }
+
+                
+
+            }
+
+            //so it will return true if first, its close enough to where min's and max's intersect, then checks if to left of right, and then goes through boths closest wides
+
+            return false;
+        }
+
+        private Line getMinMaxY()
+        {
+            Line ret = new Line();
+            int min = 0;
+            int max = 0;
+            //this will set min and max to the absolute min and max's of the polygon in the sense of Y
+            for(int i = 0; i < lines.Count; i++)
+            {
+                if(lines[i].pt1.Y > max)
+                {
+                    max = lines[i].pt1.Y;
+                }
+                if (lines[i].pt2.Y > max)
+                {
+                    max = lines[i].pt2.Y;
+                }
+                if (lines[i].pt1.Y < min)
+                {
+                    min = lines[i].pt1.Y;
+                }
+                if (lines[i].pt2.Y < min)
+                {
+                    min = lines[i].pt2.Y;
+                }
+            }
+
+            ret.pt1 = new MyPoint(0, max,"max");
+            ret.pt2 = new MyPoint(0, min, "min");
+
+            return ret;
+
+        }
+        private Line getMinMaxX()
+        {
+            Line ret = new Line();
+            int min = 0;
+            int max = 0;
+            //this will set min and max to the absolute min and max's of the polygon in the sense of Y
+            for (int i = 0; i < lines.Count; i++)
+            {
+                if (lines[i].pt1.X > max)
+                {
+                    max = lines[i].pt1.X;
+                }
+                if (lines[i].pt2.X > max)
+                {
+                    max = lines[i].pt2.X;
+                }
+                if (lines[i].pt1.X < min)
+                {
+                    min = lines[i].pt1.X;
+                }
+                if (lines[i].pt2.X < min)
+                {
+                    min = lines[i].pt2.X;
+                }
+            }
+
+            ret.pt1 = new MyPoint(max, 0, "max");
+            ret.pt2 = new MyPoint(min, 0, "min");
+
+            return ret;
+
+        }
+
+        public void Draw(SpriteBatch sb)
+        {
+            for(int i = 0; i < lines.Count; i++)
+            {
+                lines[i].Draw(sb);
+            }
+
+        }
+    }
 }

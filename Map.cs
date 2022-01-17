@@ -81,11 +81,16 @@ namespace Quesar
         public void Draw(SpriteBatch sp)
         {
 
-            //temp for displaying the map quad tree
+            //temp for displaying the map quad tree and traces if an object has them,
+            //trace draw will show lines and polygons know intersections aswell
             if(worldObjects.getCount() != 0)
             {
 
                 worldObjects.Draw(sp);
+                if(!(worldObjects.traces is null) && worldObjects.traces.Count != 0)
+                {
+                    worldObjects.DrawTrace(sp);
+                }
             }
             //
 
