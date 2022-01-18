@@ -15,6 +15,17 @@ namespace Quesar
 {
     public class Dictionary
     {
+        //newer more specific definition of this:
+        //so basically dictionary is like a search interface of data, so when we want objects/textures/hitboxes, we can use the dictionary to pull usable objects and modify them
+        //data interacts with the dictionary to pass up constructed objects,(theoretically should only have to code object types in Data)
+        //data uses the ID to first make a key of where different kinds of things are stored in the files
+        //then it will be able to give data any sort of file which data can read and turn into something
+        //ID will also be able to write new data, and modify existing data
+
+        //if this can work well gameengine will be incredibly op
+        //basically it can save and load anything super easy 
+
+
         //dictionary is essentially a look up for everything?
         //so my initial idea is it will have everything saved here, 
         //it will store lists of quad trees along with dates & times of the time it was saved,
@@ -36,7 +47,7 @@ namespace Quesar
         public Dictionary(ContentManager c,string gp)
         {
             globalPath = gp;
-            data = new Data(gp); 
+            data = new Data(c,gp); 
             data.makeLayers();
         }
 
@@ -44,18 +55,45 @@ namespace Quesar
         
 
 
-        //this is the section with the actual data
+        //the data class is the beefy boy that starts up and makes me everything i want
         private class Data
         {
             private ID ID;
-            public Data(string gp)
+            
+           
+            public Data(ContentManager c,string gp)
             {
                 ID = new ID(gp);
+                Create(c);
+
+
+
+            }
+
+            public void Create(ContentManager c)
+            {
+                //this is a hard code thing, create initializes what types of eveyrthing its going to need
+                //aka creat will hold the absoulte database on objects
 
 
 
 
             }
+
+            //this can pass an initalizing objects' saved texture path and load it into game
+            //basically stored string -> generated texture super easily
+            public Texture2D loadTexture(ContentManager c,string path)
+            {
+                //the string it is given is the type & 
+                return c.Load<Texture2D>(path);
+            }
+
+            public Map loadMap()
+            {
+
+            }
+
+            
 
             public void makeLayers()
             {
@@ -64,30 +102,32 @@ namespace Quesar
 
         }
 
+        //only 1 of these should exist across game ever
         private class ID
         {
 
             public List<int> idType;
             public List<string> layers;
             private List<int> layercounts;
+            private List<int> depth;
 
             public int layercount;
             public int size;
             public string layerName;
 
+            public string globalPath;
+
             private List<ID> ids;
             
             
-            //so this is the first function which only needs to filter through the files and assign a key to them
-            //data is what has the ability to read using the id paths
-            //however id will be used to pull those files and send them to and from the directory, so only id messes
-            //with directory
+            //id is the key system that sends data the files to save & load based on 
             public ID(string gp)
             {
                 idType = new List<int>();
                 layers = new List<string>();
                 layercounts = new List<int>();
                 ids = new List<ID>();
+                globalPath = gp;
                 if (Directory.Exists(gp))
                 {
                     if (Directory.GetDirectories(gp).Length != 0)
@@ -112,6 +152,10 @@ namespace Quesar
                 {
                     throw new ArgumentException("directory does not exist");
                 }
+
+                condense();
+
+                //so when the id gets created, it recursively is able to find everything that exists, gets the names, and then 
             }    
             //recursive function into its self, dives 1 step deeper into the folders each time, 
             //
@@ -140,6 +184,7 @@ namespace Quesar
                 
 
             }
+            //so now this should create a key using lists, one is more just a quick numerical refrence if needed
 
             public void condense()
             {
@@ -147,12 +192,12 @@ namespace Quesar
                 List<int> tempint = new List<int>();
                 List<string> temp = new List<string>();
                 List<int> templayer = new List<int>();
+                List<int> tempdepth = new List<int>();
 
-                
 
                 //first element will always be top layer
                 //this then sets temp concated with the output of the recursive & sets the layer counts aswell
-                temp = condenseR(out templayer);
+                temp = condenseR(out templayer, out tempdepth);
                 
                 //then makes other half of index
                 for(int i = 0; i < temp.Count; i ++)
@@ -163,6 +208,7 @@ namespace Quesar
                 idType = tempint;
                 layers = temp;
                 layercounts = templayer;
+                
 
                 //finally nulls out id's to make them not exist as everything needed exists at the top now
                 ids = null;
@@ -172,43 +218,150 @@ namespace Quesar
 
             }
 
-            public List<string> condenseR(out List<int> layers)
+            public List<string> condenseR(out List<int> layers,out List<int> depth)
             {
-                
                 //this will now recurssively pass up things
-                if (ids.Count > 0)
+                List<string> outstring = new List<string>();
+                List<int> layercts = new List<int>();
+                List<int> tempdep = new List<int>();
+                outstring.Add(layerName);
+                layercts.Add(layercount);
+                tempdep.Add(size);
+                if(layercount != 0)
                 {
-                    //initialises
-                    List<string> tempstring = new List<string>();
-                    List<int> templayer = new List<int>();
-                    tempstring.Add(layerName);
-                    templayer.Add(layercount);
-                    for(int i = 0; i < ids.Count; i++)
+                   
+                    for(int i = 0; i < layercount; i++)
                     {
-                        //goes through and returns everything needed
-                        tempstring.Concat(ids[i].condenseR(out templayer));
+                        //this should add in a recursive element and keep everything in order
+                        List<int> supertemp = new List<int>();
+                        List<int> superdepth = new List<int>();
+                        outstring.Concat(ids[i].condenseR(out supertemp, out superdepth));
+                        layercts.Concat(supertemp);
+                        tempdep.Concat(superdepth);
                     }
-                    layers = templayer;
 
-                    return tempstring;
                 }
-                else
-                {
-                    layers = new List<int>();
-                    return new List<string>();
-                }
+
+
+                //nulls node and returns important values, removing heftyness from the program
+                ids = null;
+                size = 0;
+                layercount = 0;
+                layers = layercts;
+                depth = tempdep;
+                return outstring;
 
 
             }
+
+            //i want 2 functions, one will be given a id of a folder and a file name, one will be of a id of a folder.
+            //essentially when ran by Data, it will be able to pull entire folders of files, or just one depending on what is needed by the system
+            public FileInfo getFile(string path, string fileName)
+            {
+                string tempFinder = globalPath;
+                //defines the path to take
+                List<int> numPath = getNumPath(getNum(path));
+                for(int i = 0; i < numPath.Count; i++)
+                {
+                    tempFinder = tempFinder + @"\" + layers[numPath[i]];
+                }
+                tempFinder = tempFinder + fileName;
+
+                FileInfo fileInfo = new FileInfo(tempFinder);
+                if (fileInfo.Exists)
+                {
+                    return fileInfo;
+                }
+                else
+                {
+                    throw new AggregateException("couldnt find file");
+                }
+
+            }
+            //getFiles should be able to just run a loop through the count of files & use getFile a few times and put it together
+            public List<FileInfo> getFiles(string path)
+            {
+                List<FileInfo> fileInfo = new List<FileInfo>();
+                string tempFinder = globalPath;
+                List<int> numPath = getNumPath(getNum(path));
+                for (int i = 0; i < numPath.Count; i++)
+                {
+                    tempFinder = tempFinder + @"\" + layers[numPath[i]];
+                }
+                foreach (string newpath in Directory.GetFiles(tempFinder))
+                {
+                    FileInfo tempinfo = new FileInfo(newpath);
+                    if (tempinfo.Exists)
+                    {
+                        fileInfo.Add(tempinfo);
+                    }
+                }
+                return fileInfo;
+            }
+            
+            //need to add way to create a new file and folder
+
+           
+           
+
+            //get number path will return a list of ints that are the positions in order to reach a folder
+            private List<int> getNumPath(int x)
+            {
+                //here x represents the location of the string according to the key
+                //what this will do is send out a list of ints that are the path to the file being looked at
+                List<int> a = new List<int>();
+                if(x != 0)
+                {
+                    a.Add(0);
+                    a.Add(x);
+                    //in the layer list it is set up like an n-array 
+                    //so we must be able to read it
+                    int index = x;
+                    //maybe use the layer count reversly, it can make guesses and check what it will send out
+
+                    while(index != 0)
+                    {
+                        int temp = depth[index];
+                        for(int i = index; i > 0; i--)
+                        {
+                            if(depth[i] == temp - 1)
+                            {
+                                //so first it will scan if an object is one layer up, this signifies that the layer is a parent because the way the key sets up
+                                a.Insert(i, 1);
+                                index = i;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    a.Add(0);
+                }
                 
                 
                 
-                
-                
-                
-                
-                
-                
+
+
+
+
+                return a;
+            }
+            private int getNum(string path)
+            {
+                int ret = 0;
+                for (int i = 0; i < layers.Count ;i++)
+                {
+                    if( path == layers[i])
+                    {
+                        ret = i;
+                        break;
+                    }
+
+                }
+
+                 return ret;
+            }
                 
         }
 
