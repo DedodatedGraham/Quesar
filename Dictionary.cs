@@ -59,21 +59,66 @@ namespace Quesar
         private class Data
         {
             private ID ID;
-            
-           
+            private List<string> Key;
+            private List<string> KeyPath;
+
+            //everything will be here, maybe hold as object?
+
+            private List<List<object>> everything;
+
+
+            //now here is our data which is the objects loaded in them selves//
+
+            //now we need to store all 
             public Data(ContentManager c,string gp)
             {
                 ID = new ID(gp);
+
+                //the idea is key will be made according to the id's tags and pulls all according file names
+                MakeKey();
+                //then it will produce all objects
                 Create(c);
 
+            
 
 
+            }
+            private void MakeKey()
+            {
+                //this decides if it will load the entire key or just the most current and applicapble
+                //can apply this when making actual game
+                bool sort = false;
+
+                Key = new List<string>();
+                KeyPath = new List<string>();
+                for(int i = 0; i < ID.layers.Count; i++)
+                {
+                    //this first loop will take us through each layer of ID, each with objects to load in which case a key is needed
+                    int tempcount = ID.getFileCount(ID.layers[i]);
+                    if (tempcount != 0)
+                    {
+                        //if it has files then it will load them into a Key
+                        for (int j = 0; j < tempcount; j++)
+                        {
+                            //we then have all loaded objects
+                            Key.Add(ID.getFileName(j, ID.layers[i]));
+                            KeyPath.Add(ID.layers[i]);
+                        }
+                    }
+                    
+                }
+
+                if (sort)
+                {
+
+                }
             }
 
             public void Create(ContentManager c)
             {
-                //this is a hard code thing, create initializes what types of eveyrthing its going to need
-                //aka creat will hold the absoulte database on objects
+                //there will have to be some hard coding for each object, however 
+
+                
 
 
 
@@ -88,10 +133,23 @@ namespace Quesar
                 return c.Load<Texture2D>(path);
             }
 
-            public Map loadMap()
+            public Map loadMap(ContentManager c, string path)
+            {
+                Map ret = new Map();
+                FileInfo fileInfo = ID.getFile(path, getFileName(path));
+
+
+                return ret;
+
+            }
+
+            public string getFileName(string path)
             {
 
             }
+
+            
+            
 
             
 
@@ -256,6 +314,8 @@ namespace Quesar
 
             //i want 2 functions, one will be given a id of a folder and a file name, one will be of a id of a folder.
             //essentially when ran by Data, it will be able to pull entire folders of files, or just one depending on what is needed by the system
+
+            //file name is the actual save name of it, path is the simpler object refrence
             public FileInfo getFile(string path, string fileName)
             {
                 string tempFinder = globalPath;
@@ -300,11 +360,42 @@ namespace Quesar
             }
             
             //need to add way to create a new file and folder
+            public string getFileName(int i,string path)
+            {
+                string tempFinder = globalPath;
+                List<int> numPath = getNumPath(getNum(path));
+                for (int j = 0; j < numPath.Count; j++)
+                {
+                    tempFinder = tempFinder + @"\" + layers[numPath[j]];
+                }
+                string ret = Directory.GetFiles(tempFinder)[i];
+                ret = Path.GetFileNameWithoutExtension(ret);
+                return ret;
 
+            }
            
-           
+            public int getFileCount(string path)
+            {
+                string tempFinder = globalPath;
+                List<int> numPath = getNumPath(getNum(path));
+
+                for (int j = 0; j < numPath.Count; j++)
+                {
+                    tempFinder = tempFinder + @"\" + layers[numPath[j]];
+                }
+
+                return Directory.GetFiles(tempFinder).Length;
+
+            }
+
 
             //get number path will return a list of ints that are the positions in order to reach a folder
+            private string getPath(int x)
+            {
+                string ret = "";
+
+                return ret;
+            }
             private List<int> getNumPath(int x)
             {
                 //here x represents the location of the string according to the key
@@ -365,7 +456,7 @@ namespace Quesar
                 
         }
 
-
+        
 
     }
     

@@ -76,6 +76,10 @@ namespace Quesar
             worldObjects = new QuadTree();
             saveName = "";
         }
+        public Map()
+        {
+
+        }
 
 
         public void Draw(SpriteBatch sp)
