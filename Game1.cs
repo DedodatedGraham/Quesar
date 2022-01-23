@@ -2,23 +2,26 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
-using Quesar.GameCustomClasses;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MonoGame.Extended.ViewportAdapters;
+using Windows.Storage;
 
 namespace Quesar
 {
     public class Game1 : Game
     {
+        public Dictionary dictionary;
+        
         public Player thisPlayer;
         public SpriteFont publicFont;
 
         public bool gameRun;
+        public string globalPath = @"C:\Users\graha\source\repos\Quesar\bin\Debug\netcoreapp3.1\Data";
 
-        
+
         public int camMovementSpeed;
         public float zooom;
 
@@ -70,6 +73,8 @@ namespace Quesar
 
             editActive = false;
 
+            
+
 
 
 
@@ -81,13 +86,16 @@ namespace Quesar
 
         protected override void LoadContent()
         {
+
+            
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             
 
+
             // TODO: use this.Content to load your game content here
-            
-            
+
+            dictionary = new Dictionary(Content, globalPath);
             background = Content.Load<Texture2D>("BackgroundV2");
             altbackground = Content.Load<Texture2D>("BackgroundV1");
             buttonv1 = Content.Load<Texture2D>("ButtonV1");
@@ -100,7 +108,7 @@ namespace Quesar
 
             thisPlayer = new Player(_graphics,GraphicsDevice, defaulSkin, "temp");
 
-            editor = new MapEditor(GraphicsDevice, buttonv1, charDisplayBox, _graphics,Content);
+            editor = new MapEditor(GraphicsDevice, buttonv1, charDisplayBox, _graphics,Content,globalPath);
 
 
 

@@ -10,6 +10,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using System.Xml.Serialization;
+using System.Diagnostics;
+
 
 namespace Quesar
 {
@@ -47,9 +49,24 @@ namespace Quesar
         public Dictionary(ContentManager c,string gp)
         {
             globalPath = gp;
-            data = new Data(c,gp); 
-            data.makeLayers();
+            data = new Data(c, gp);
+
         }
+        //dictionary takes in push's and requests and makes data do them.
+
+
+
+        //when we want a fully loaded map to the dictionary 
+        public Map getMap(string name)
+        {
+            return data.getMap(name);
+
+        }
+        public void saveMap(Map map, string name)
+        {
+            data.saveMap(map, name);
+        }
+
 
         
         
@@ -62,9 +79,12 @@ namespace Quesar
             private List<string> Key;
             private List<string> KeyPath;
 
-            //everything will be here, maybe hold as object?
+            private List<int> typeIndex;
 
-            private List<List<object>> everything;
+
+            private List<Map> loadedMaps;
+
+            private string globalPath;
 
 
             //now here is our data which is the objects loaded in them selves//
@@ -73,9 +93,10 @@ namespace Quesar
             public Data(ContentManager c,string gp)
             {
                 ID = new ID(gp);
-
+                globalPath = gp;
                 //the idea is key will be made according to the id's tags and pulls all according file names
                 MakeKey();
+
                 //then it will produce all objects
                 Create(c);
 
@@ -108,17 +129,85 @@ namespace Quesar
                     
                 }
 
+                //if everything doesnt need to be loaded, the key will also pull then file dates and load the newest of each occurance 
+                //will be implemented later, but saves memory and processes when we cut out the un needed stuff early on
                 if (sort)
                 {
 
                 }
             }
 
-            public void Create(ContentManager c)
+            private void Create(ContentManager c)
             {
-                //there will have to be some hard coding for each object, however 
+                //initialize all of our lists that contain all the objects that can be sent/accesed by the dictionary
+                loadedMaps = new List<Map>();
 
-                
+
+                //we also want to get the counts of each kind of object in the ketpath so we can load them relatively, we can use an index num list for easy introduction to loops.
+
+
+                typeIndex = new List<int>();
+                string relative = "";
+                int indx = 0;
+                //should now give us an ordered top down knowledge of how many objects of each type need to be loaded
+                for(int i = 0; i < KeyPath.Count; i++)
+                {
+                    if(relative != KeyPath[i])
+                    {
+                        //if the cycle is starting 
+                        if(typeIndex.Count == 0)
+                        {
+                            relative = KeyPath[i];
+                            indx++;
+                        }
+                        //if its started so needs to reset
+                        else
+                        {
+                            typeIndex.Add(indx);
+                            indx = 1;
+                            relative = KeyPath[i];
+                        }
+
+
+
+
+                    }
+                    else
+                    {
+                        indx++;
+                    }
+                }
+                if(KeyPath.Count == 1 && typeIndex.Count == 0)
+                {
+                    typeIndex.Add(1);
+                }
+
+
+
+                //we now use the key to make the obecjts and errything
+                //type index's size lets us cycle through each type of element at a time
+
+                //indx we can use again
+                int index = 0;
+                for (int i = 0; i < typeIndex.Count; i++)
+                {
+                    for(int j = 0; j < typeIndex[j]; j++)
+                    {
+                        switch (KeyPath[i])
+                        {
+                            //when tagged as map 
+                            case "Map":
+                                loadedMaps.Add(loadMap(c,KeyPath[i],index + j));
+                                //this will grab the texture sheet for enviorment objects that is there.
+                                loadedMaps[index + j].setSprite(loadTexture(c,loadedMaps[index+j].sheetName));
+                                break;
+                            
+
+                        }
+                    }
+                    //this keeps index at an absoulte startof each 
+                    index += typeIndex[i];
+                }
 
 
 
@@ -127,36 +216,51 @@ namespace Quesar
 
             //this can pass an initalizing objects' saved texture path and load it into game
             //basically stored string -> generated texture super easily
-            public Texture2D loadTexture(ContentManager c,string path)
+            private Texture2D loadTexture(ContentManager c,string path)
             {
-                //the string it is given is the type & 
+                //anything with textures can use this 
                 return c.Load<Texture2D>(path);
             }
 
-            public Map loadMap(ContentManager c, string path)
+            private Map loadMap(ContentManager c, string path, int i)
             {
+                
                 Map ret = new Map();
-                FileInfo fileInfo = ID.getFile(path, getFileName(path));
+                //string tempName = ID.getFileName(i,path);
+                //getting file info may not be needed, 
+                //FileInfo fileInfo = ID.getFile(path, tempName);
+                XmlSerializer serializer = new XmlSerializer(typeof(Map));
 
-
+                using (StringReader sr = new StringReader(ID.getFilePath(i,path)))
+                {
+                   ret = (Map)serializer.Deserialize(sr);
+                }
+                //will have to test arround with maps and see ultimately how well this works
                 return ret;
 
             }
 
-            public string getFileName(string path)
+
+            //heres the interaction stuff, basically the dictionary is used to get objects, so this is the public function which can be interacted with by command through dictionary, but everything else is private D:
+            public Map getMap(string name)
+            {
+                for(int i = 0; i < loadedMaps.Count; i++)
+                {
+                    if(name == loadedMaps[i].worldName)
+                    {
+                        return loadedMaps[i];
+                    }
+                }
+
+                return null;
+
+            }
+            
+            public void saveMap(Map map, string name)
             {
 
             }
 
-            
-            
-
-            
-
-            public void makeLayers()
-            {
-                
-            }
 
         }
 
@@ -164,7 +268,7 @@ namespace Quesar
         private class ID
         {
 
-            public List<int> idType;
+            
             public List<string> layers;
             private List<int> layercounts;
             private List<int> depth;
@@ -181,7 +285,6 @@ namespace Quesar
             //id is the key system that sends data the files to save & load based on 
             public ID(string gp)
             {
-                idType = new List<int>();
                 layers = new List<string>();
                 layercounts = new List<int>();
                 ids = new List<ID>();
@@ -213,15 +316,18 @@ namespace Quesar
 
                 condense();
 
+
                 //so when the id gets created, it recursively is able to find everything that exists, gets the names, and then 
             }    
             //recursive function into its self, dives 1 step deeper into the folders each time, 
             //
-            public ID(int s,string path)
+            private ID(int s,string path)
             {
+                ids = new List<ID>();
                 size = s + 1;
                 layerName = Path.GetFileNameWithoutExtension(path);
-                if (Directory.GetDirectories(path).Length != 0)
+                //if the folder isnt completely empty it wont get skipped when making 
+                if (Directory.GetFiles(path).Length != 0 || Directory.GetDirectories(path).Length != 0)
                 {
                     layercount = Directory.GetDirectories(path).Length;
                     foreach (string newpath in Directory.GetDirectories(path))
@@ -244,10 +350,9 @@ namespace Quesar
             }
             //so now this should create a key using lists, one is more just a quick numerical refrence if needed
 
-            public void condense()
+            private void condense()
             {
                 //this condense's task it to take everything below it and put it all into a key
-                List<int> tempint = new List<int>();
                 List<string> temp = new List<string>();
                 List<int> templayer = new List<int>();
                 List<int> tempdepth = new List<int>();
@@ -258,15 +363,11 @@ namespace Quesar
                 temp = condenseR(out templayer, out tempdepth);
                 
                 //then makes other half of index
-                for(int i = 0; i < temp.Count; i ++)
-                {
-                    tempint.Add(i);
-                }
+                
                 //now assigns temps
-                idType = tempint;
                 layers = temp;
                 layercounts = templayer;
-                
+                depth = tempdepth;
 
                 //finally nulls out id's to make them not exist as everything needed exists at the top now
                 ids = null;
@@ -276,7 +377,7 @@ namespace Quesar
 
             }
 
-            public List<string> condenseR(out List<int> layers,out List<int> depth)
+            private List<string> condenseR(out List<int> layers,out List<int> depth)
             {
                 //this will now recurssively pass up things
                 List<string> outstring = new List<string>();
@@ -285,20 +386,33 @@ namespace Quesar
                 outstring.Add(layerName);
                 layercts.Add(layercount);
                 tempdep.Add(size);
-                if(layercount != 0)
+                
+                
+                for(int i = 0; i < ids.Count; i++)
                 {
-                   
-                    for(int i = 0; i < layercount; i++)
+                    //this should add in a recursive element and keep everything in order
+                    List<int> supertemp = new List<int>();
+                    List<int> superdepth = new List<int>();
+                    List<string> superstring = new List<string>();
+                    superstring = ids[i].condenseR(out supertemp, out superdepth);
+                    for(int j = 0; j < superstring.Count; j++)
                     {
-                        //this should add in a recursive element and keep everything in order
-                        List<int> supertemp = new List<int>();
-                        List<int> superdepth = new List<int>();
-                        outstring.Concat(ids[i].condenseR(out supertemp, out superdepth));
-                        layercts.Concat(supertemp);
-                        tempdep.Concat(superdepth);
+                        outstring.Add(superstring[j]);
+                        layercts.Add(supertemp[j]);
+                        tempdep.Add(superdepth[j]);
                     }
 
+                    //debugging key condensing
+                    //for (int j = 0; j < superstring.Count; j++)
+                    //{
+                    //    Debug.WriteLine(supertemp[j]);
+                    //    Debug.WriteLine(superdepth[j]);
+                    //    Debug.WriteLine(outstring[j]);
+                    //}
+
                 }
+
+                
 
 
                 //nulls node and returns important values, removing heftyness from the program
@@ -366,7 +480,10 @@ namespace Quesar
                 List<int> numPath = getNumPath(getNum(path));
                 for (int j = 0; j < numPath.Count; j++)
                 {
-                    tempFinder = tempFinder + @"\" + layers[numPath[j]];
+                    if(j != 0)
+                    {
+                        tempFinder = tempFinder + @"\" + layers[numPath[j]];
+                    }
                 }
                 string ret = Directory.GetFiles(tempFinder)[i];
                 ret = Path.GetFileNameWithoutExtension(ret);
@@ -381,10 +498,27 @@ namespace Quesar
 
                 for (int j = 0; j < numPath.Count; j++)
                 {
-                    tempFinder = tempFinder + @"\" + layers[numPath[j]];
+                    if(j != 0)
+                    {
+                        tempFinder = tempFinder + @"\" + layers[numPath[j]];
+                    }
+                   
                 }
 
                 return Directory.GetFiles(tempFinder).Length;
+
+            }
+
+            public string getFilePath(int i,string path)
+            {
+                string tempFinder = globalPath;
+                List<int> numPath = getNumPath(getNum(path));
+                for (int j = 0; j < numPath.Count; j++)
+                {
+                    tempFinder = tempFinder + @"\" + layers[numPath[j]];
+                }
+                tempFinder = tempFinder + @"\" + getFileName(i, path);
+                return tempFinder;
 
             }
 
@@ -401,35 +535,34 @@ namespace Quesar
                 //here x represents the location of the string according to the key
                 //what this will do is send out a list of ints that are the path to the file being looked at
                 List<int> a = new List<int>();
-                if(x != 0)
+                a.Add(0);
+                if (x != 0)
                 {
-                    a.Add(0);
-                    a.Add(x);
-                    //in the layer list it is set up like an n-array 
-                    //so we must be able to read it
-                    int index = x;
-                    //maybe use the layer count reversly, it can make guesses and check what it will send out
-
-                    while(index != 0)
+                    if(depth[x] == 1)
                     {
-                        int temp = depth[index];
-                        for(int i = index; i > 0; i--)
+                        a.Add(x);
+                    }
+                    else
+                    {
+                        //so here we want to go up the list starting from x and basically we will go down to each closest -1 level of depth
+                        int index = x;
+                        //index tracks the position of each time we need to step back
+                        while(depth[index] > 0)
                         {
-                            if(depth[i] == temp - 1)
+                            for(int i = index; i > 0; i--)
                             {
-                                //so first it will scan if an object is one layer up, this signifies that the layer is a parent because the way the key sets up
-                                a.Insert(i, 1);
-                                index = i;
-                                break;
+                                if(depth[i] == depth[index] - 1)
+                                {
+                                    index = i;
+                                    a.Insert(1,index);
+                                    
+                                }
+
                             }
                         }
                     }
+                    
                 }
-                else
-                {
-                    a.Add(0);
-                }
-                
                 
                 
 

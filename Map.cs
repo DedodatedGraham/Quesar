@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
+using System.Xml.Serialization;
 
 namespace Quesar
 {
@@ -18,24 +19,32 @@ namespace Quesar
         //we will use a quad tree to store the center point of every object to make rendering super quick, rather than checking through everything
         //itll only open up objects which have their own predefined hitboxes& everything else 
         //This should work by having a quad tree with the points of objects and making each object have a quad tree array in it with all nessicary information?:)
-        string worldName { get; set; }
+        public string worldName { get; set; }
         public QuadTree worldObjects { get; set; }
         public List<MapElement> mapElements { get; set;}
-        public List<MapElement> rendered { get; set; }
+        [XmlIgnore]
+        private List<MapElement> rendered { get; set; }
         public int limit { get; set; }
 
         public Rectangle boundary { get; set; }
         public bool hasSave { get; set; }
         public string saveLocation { get; set; }
         public string saveName { get; set; }
+        [XmlIgnore]
         private Texture2D julios;
+        [XmlIgnore]
         private ContentManager content { get; set; }
+
+        [XmlIgnore]
+        private Texture2D enviormentSheet { get; set; }
+        public string sheetName { get; set; }
 
         public Map(GraphicsDevice gd,int xSize, int ySize,string name,ContentManager c)
         {
             content = c;
             rendered = new List<MapElement>();
             mapElements = new List<MapElement>();
+
 
             julios = c.Load<Texture2D>("JuliosV1");
 
@@ -240,6 +249,11 @@ namespace Quesar
             juli.location = point;
             
             return juli;
+        }
+
+        public void setSprite(Texture2D sheet)
+        {
+            enviormentSheet = sheet;
         }
     }
 }

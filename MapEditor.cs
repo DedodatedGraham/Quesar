@@ -26,6 +26,7 @@ namespace Quesar
         public TextBox box { get; set; }
         public string saveName { get; set; }
         public string loadName { get; set; }
+        public string globalPath { get; set; }
 
         public bool curentMesh { get; set; }
         private bool mouseState;
@@ -41,8 +42,10 @@ namespace Quesar
         //random idea for map editor, but have a section for world building and then a section for object meshing,
         //aka when meshing objects you can click where you want points/lines and it will auto make and format everything for in game stuff that sucks to hard code, where as the actual object data can be adjusted by me
 
-        public MapEditor(GraphicsDevice gd, Texture2D btn1, Texture2D btn2, GraphicsDeviceManager gdm,ContentManager c)
+        public MapEditor(GraphicsDevice gd, Texture2D btn1, Texture2D btn2, GraphicsDeviceManager gdm,ContentManager c, string gp)
         {
+            globalPath = gp;
+
             //needed for typing
             currentdown = "";
             lastdown = "";
@@ -210,10 +213,7 @@ namespace Quesar
         //should be sorta working save and load functions now using save,load,encode,and decode
         public void LoadMap()
         {
-            currentMap.worldObjects = new QuadTree();
-            //LOADING DOESNT WORK RN
-            //currentMap.worldObjects = Decoder<QuadTree>(loadName);
-            loadName = "";
+            //this should be all the load map instructions, should use dictionary to find all available loadable maps
         }
 
         public void SaveMap()
@@ -223,8 +223,8 @@ namespace Quesar
             {
                 currentMap.saveName = saveName;
             }
-
-            Encoder(currentMap.worldObjects,currentMap.saveName);
+            //uses global path and classification to save it in correct spot
+            Encoder(currentMap,globalPath + @"\Map\" +currentMap.saveName);
 
             saveName = "";
         }
