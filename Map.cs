@@ -13,6 +13,7 @@ using System.Xml.Serialization;
 
 namespace Quesar
 {
+    [Serializable()]
     public class Map
     {
 

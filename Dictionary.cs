@@ -11,7 +11,8 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using System.Xml.Serialization;
 using System.Diagnostics;
-
+using System.Xml;
+using System.Xml.Linq;
 
 namespace Quesar
 {
@@ -229,11 +230,16 @@ namespace Quesar
                 //string tempName = ID.getFileName(i,path);
                 //getting file info may not be needed, 
                 //FileInfo fileInfo = ID.getFile(path, tempName);
-                XmlSerializer serializer = new XmlSerializer(typeof(Map));
-
-                using (StringReader sr = new StringReader(ID.getFilePath(i,path)))
+                string temp = ID.getFilePath(i, path);
+                XDocument doc = XDocument.Load(temp);
+                using (XmlReader xr = XmlReader.Create(temp))
                 {
-                   ret = (Map)serializer.Deserialize(sr);
+                    xr.MoveToContent();
+                    int count = doc.Descendants().Count(); 
+                    //for(int i = 0; i < count; i++){ }
+                    
+
+
                 }
                 //will have to test arround with maps and see ultimately how well this works
                 return ret;

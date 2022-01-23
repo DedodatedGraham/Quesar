@@ -641,12 +641,9 @@ namespace Quesar
         }
 
         public List<MyPoint> gatherNear(MyPoint nw, MyPoint sw, MyPoint ne, MyPoint se)
+
         {
             List<MyPoint> ret = new List<MyPoint>();
-            int nwd = depthBounds(nw.X, nw.Y);
-            int swd = depthBounds(sw.X, sw.Y);
-            int ned = depthBounds(ne.X, ne.Y);
-            int sed = depthBounds(se.X, se.Y);
             if (isDivided)
             {
                 //the program will first run through & see if it can decrease quality from top because rendered in such small area 
@@ -686,7 +683,45 @@ namespace Quesar
 
             return ret;
         }
+        public List<MyPoint> gatherAll()
+        {
+            //returns all points
+            List<MyPoint> ret = new List<MyPoint>();
+            if (isDivided)
+            {
+                List<MyPoint> nwp = northWest.gatherAll();
+                for(int i = 0; i < nwp.Count; i++)
+                {
+                    ret.Add(nwp[i]);
+                }
+                List<MyPoint> swp = southWest.gatherAll();
+                for (int i = 0; i < swp.Count; i++)
+                {
+                    ret.Add(swp[i]);
+                }
+                List<MyPoint> nep = northEast.gatherAll();
+                for (int i = 0; i < nep.Count; i++)
+                {
+                    ret.Add(nep[i]);
+                }
+                List<MyPoint> sep = southEast.gatherAll();
+                for (int i = 0; i < sep.Count; i++)
+                {
+                    ret.Add(sep[i]);
+                }
+            }
+            else if(!(points is null) && points.Count != 0)
+            {
+                //checks which points are within bounds
+                for (int i = 0; i < points.Count; i++)
+                {
+                    ret.Add(points[i]);
+                }
+            }
 
+
+            return ret;
+        }
         private List<MyPoint> gather(MyPoint nw, MyPoint se)
         {
             List<MyPoint> ret = new List<MyPoint>();
@@ -1214,6 +1249,17 @@ namespace Quesar
                 lines[i].Draw(sb);
             }
 
+        }
+
+        public List<string> getIds()
+        {
+            List<string> ret = new List<string>();
+            for(int i = 0; i < lines.Count; i++)
+            {
+                ret.Add(lines[i].pt1.id);
+            }
+            
+            return ret;
         }
     }
 }

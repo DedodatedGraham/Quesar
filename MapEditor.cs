@@ -9,6 +9,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using System.Xml.Serialization;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace Quesar
 {
@@ -224,20 +226,93 @@ namespace Quesar
                 currentMap.saveName = saveName;
             }
             //uses global path and classification to save it in correct spot
-            Encoder(currentMap,globalPath + @"\Map\" +currentMap.saveName);
+            MapEncoder(currentMap,globalPath + @"\Map\" +currentMap.saveName);
 
             saveName = "";
         }
 
 
         
-        //need to work on saving and loading now
-        // wont work for a map, however we can store quad trees easily, so loading & saving those where they can show the program what to do with what its given is most likely best
-        public void Encoder<T>(T data,string location)
+        
+        private void MapEncoder(Map data,string location)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(T));
-            TextWriter writer = new StreamWriter(location);
-            serializer.Serialize(writer,data);
+            if (File.Exists(location))
+            {
+                location += "1";
+            }
+
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = "\t";
+            XmlWriter writer = XmlWriter.Create(location, settings);
+
+            
+            writer.WriteStartDocument();
+            writer.WriteStartElement(data.saveName);
+            //first we want to go through the quadtree of points and write each's id & position
+            int qtcount = data.worldObjects.getCount();
+            writer.WriteStartElement(data.worldObjects.ToString());
+            if (qtcount > 0)
+            {
+               
+                List<MyPoint> allPoints = data.worldObjects.gatherAll();
+
+                for (int i = 0; i < qtcount; i++)
+                {
+                    writer.WriteStartElement("MyPoint");
+
+                    writer.WriteStartElement("X");
+                    writer.WriteValue(allPoints[i].X);
+                    writer.WriteEndElement();
+
+                    writer.WriteStartElement("Y");
+                    writer.WriteValue(allPoints[i].Y);
+                    writer.WriteEndElement();
+
+                    writer.WriteStartElement("ID");
+                    writer.WriteValue(allPoints[i].id);
+                    writer.WriteEndElement();
+
+                    writer.WriteEndElement();
+                }
+                
+            }
+            //next we will go through each trace that exists
+            if(!(data.worldObjects.traces is null))
+            {
+                int traceCount = data.worldObjects.traces.Count;
+                if (traceCount > 0)
+                {
+                    for (int i = 0; i < traceCount; i++)
+                    {
+                        writer.WriteStartElement("Trace");
+                        List<string> ids = data.worldObjects.traces[i].getIds();
+                        for (int j = 0; j < ids.Count; j++)
+                        {
+                            writer.WriteStartElement("Id");
+                            writer.WriteValue(ids[j]);
+                            writer.WriteEndElement();
+                        }
+
+                        writer.WriteEndElement();
+                    }
+                }
+            }
+            writer.WriteEndElement();
+            //now the map has saved all of its quadtree needed, will be able to pull out and make the quadtree from x,y, and id points after awhile
+            //next we will record all the mapElements
+            if(!(data.mapElements is null))
+            {
+                int objCount = data.mapElements.Count;
+                if (objCount > 0)
+                {
+
+                }
+            }
+            
+
+            writer.WriteEndElement();
+            writer.WriteEndDocument();
             writer.Close();
         }
 
