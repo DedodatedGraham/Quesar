@@ -553,7 +553,7 @@ namespace Quesar
                         //so here we want to go up the list starting from x and basically we will go down to each closest -1 level of depth
                         int index = x;
                         //index tracks the position of each time we need to step back
-                        while(depth[index] > 0)
+                        while(depth[index] > 1)
                         {
                             for(int i = index; i > 0; i--)
                             {
@@ -561,7 +561,7 @@ namespace Quesar
                                 {
                                     index = i;
                                     a.Insert(1,index);
-                                    
+                                    break;
                                 }
 
                             }

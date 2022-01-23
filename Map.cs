@@ -38,6 +38,7 @@ namespace Quesar
 
         [XmlIgnore]
         private Texture2D enviormentSheet { get; set; }
+        public string enviormentSheetLocation { get; set; }
         public string sheetName { get; set; }
 
         public Map(GraphicsDevice gd,int xSize, int ySize,string name,ContentManager c)

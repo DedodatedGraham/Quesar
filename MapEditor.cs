@@ -249,6 +249,17 @@ namespace Quesar
             
             writer.WriteStartDocument();
             writer.WriteStartElement(data.saveName);
+
+            //gives a date stamp on file of last saved
+            writer.WriteStartElement("Date");
+            writer.WriteValue(DateTime.Now.ToString());
+            writer.WriteEndElement();
+            //gives saved location name to get sprite sheets
+            writer.WriteStartElement("EnviornmentSheetName");
+            writer.WriteValue(data.enviormentSheetLocation);
+            writer.WriteEndElement();
+
+            
             //first we want to go through the quadtree of points and write each's id & position
             int qtcount = data.worldObjects.getCount();
             writer.WriteStartElement(data.worldObjects.ToString());
@@ -299,16 +310,30 @@ namespace Quesar
                 }
             }
             writer.WriteEndElement();
+
             //now the map has saved all of its quadtree needed, will be able to pull out and make the quadtree from x,y, and id points after awhile
-            //next we will record all the mapElements
+            //next we will record all the mapElements in each map by type and id, for refrence, might need to track more later
             if(!(data.mapElements is null))
             {
                 int objCount = data.mapElements.Count;
                 if (objCount > 0)
                 {
+                    writer.WriteStartElement("MapElement");
+                    for(int q = 0; q < objCount; q++)
+                    {
+                        writer.WriteStartElement("Id");
+                        writer.WriteValue(data.mapElements[q].id);
+                        writer.WriteEndElement();
 
+                        writer.WriteStartElement("Type");
+                        writer.WriteValue(data.mapElements[q].type);
+                        writer.WriteEndElement();
+                    }
+                    writer.WriteEndElement();
                 }
             }
+
+
             
 
             writer.WriteEndElement();
@@ -316,17 +341,7 @@ namespace Quesar
             writer.Close();
         }
 
-        public T Decoder<T>(string input)
-        where T : class
-        {
-            XmlSerializer ser = new XmlSerializer(typeof(T));
-
-            using (StringReader sr = new StringReader(input))
-            {
-                return (T)ser.Deserialize(sr);
-            }
-                
-        }
+        
 
 
 
