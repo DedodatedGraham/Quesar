@@ -95,7 +95,10 @@ namespace Quesar
 
             // TODO: use this.Content to load your game content here
 
+            //for now we can just send the made dictionary to the ui manager so we can grab things and use them and save them
             dictionary = new Dictionary(Content, globalPath);
+
+
             background = Content.Load<Texture2D>("BackgroundV2");
             altbackground = Content.Load<Texture2D>("BackgroundV1");
             buttonv1 = Content.Load<Texture2D>("ButtonV1");
@@ -108,7 +111,7 @@ namespace Quesar
 
             thisPlayer = new Player(_graphics,GraphicsDevice, defaulSkin, "temp");
 
-            editor = new MapEditor(GraphicsDevice, buttonv1, charDisplayBox, _graphics,Content,globalPath);
+            editor = new MapEditor(GraphicsDevice, buttonv1, charDisplayBox, _graphics,Content,globalPath,dictionary);
 
 
 

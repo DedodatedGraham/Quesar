@@ -30,6 +30,8 @@ namespace Quesar
         public string loadName { get; set; }
         public string globalPath { get; set; }
 
+        public Dictionary dictionary;
+
         public bool curentMesh { get; set; }
         private bool mouseState;
 
@@ -44,7 +46,7 @@ namespace Quesar
         //random idea for map editor, but have a section for world building and then a section for object meshing,
         //aka when meshing objects you can click where you want points/lines and it will auto make and format everything for in game stuff that sucks to hard code, where as the actual object data can be adjusted by me
 
-        public MapEditor(GraphicsDevice gd, Texture2D btn1, Texture2D btn2, GraphicsDeviceManager gdm,ContentManager c, string gp)
+        public MapEditor(GraphicsDevice gd, Texture2D btn1, Texture2D btn2, GraphicsDeviceManager gdm,ContentManager c, string gp,Dictionary dictionary)
         {
             globalPath = gp;
 
