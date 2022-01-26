@@ -238,7 +238,7 @@ namespace Quesar
         {
             if (File.Exists(location))
             {
-                location += "1";
+                location += "#";
             }
 
             XmlWriterSettings settings = new XmlWriterSettings();
@@ -254,10 +254,30 @@ namespace Quesar
             writer.WriteStartElement("Date");
             writer.WriteValue(DateTime.Now.ToString());
             writer.WriteEndElement();
+
             //gives saved location name to get sprite sheets
             writer.WriteStartElement("EnviornmentSheetName");
             writer.WriteValue(data.enviormentSheetLocation);
             writer.WriteEndElement();
+
+            //boundary data all maps must have one
+            writer.WriteStartElement("Boundary");
+            writer.WriteStartElement("X");
+            writer.WriteValue(data.boundary.X);
+            writer.WriteEndElement();
+            writer.WriteStartElement("Y");
+            writer.WriteValue(data.boundary.Y);
+            writer.WriteEndElement();
+            writer.WriteStartElement("Width");
+            writer.WriteValue(data.boundary.Width);
+            writer.WriteEndElement();
+            writer.WriteStartElement("Height");
+            writer.WriteValue(data.boundary.Height);
+            writer.WriteEndElement();
+            writer.WriteEndElement();
+
+
+            
 
             
             //first we want to go through the quadtree of points and write each's id & position

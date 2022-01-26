@@ -63,9 +63,9 @@ namespace Quesar
             return data.getMap(name);
 
         }
-        public void saveMap(Map map, string name)
+        public void saveMap(Map map, string name, bool overwrite)
         {
-            data.saveMap(map, name);
+            data.saveMap(map, name, overwrite);
         }
 
 
@@ -132,6 +132,7 @@ namespace Quesar
 
                 //if everything doesnt need to be loaded, the key will also pull then file dates and load the newest of each occurance 
                 //will be implemented later, but saves memory and processes when we cut out the un needed stuff early on
+                // Remeber "#" will be used at the end of files to denote newness, aka if its sorting, 
                 if (sort)
                 {
 
@@ -192,13 +193,13 @@ namespace Quesar
                 int index = 0;
                 for (int i = 0; i < typeIndex.Count; i++)
                 {
-                    for(int j = 0; j < typeIndex[j]; j++)
+                    for(int j = 0; j < typeIndex[i]; j++)
                     {
                         switch (KeyPath[i])
                         {
                             //when tagged as map 
                             case "Map":
-                                loadedMaps.Add(loadMap(c,KeyPath[i],index + j));
+                                loadedMaps.Add(loadMap(index + j));
                                 //this will grab the texture sheet for enviorment objects that is there.
                                 loadedMaps[index + j].setSprite(loadTexture(c,loadedMaps[index+j].sheetName));
                                 break;
@@ -223,27 +224,42 @@ namespace Quesar
                 return c.Load<Texture2D>(path);
             }
 
-            private Map loadMap(ContentManager c, string path, int i)
+            private Map loadMap(int x)
             {
-                
+                string location = ID.getPath(ID.getNum("Map"));
+                location += @"\" + Key[getAbsolute("Map") + x];
+
                 Map ret = new Map();
-                //string tempName = ID.getFileName(i,path);
-                //getting file info may not be needed, 
-                //FileInfo fileInfo = ID.getFile(path, tempName);
-                string temp = ID.getFilePath(i, path);
-                XDocument doc = XDocument.Load(temp);
-                using (XmlReader xr = XmlReader.Create(temp))
+
+
+                XmlReaderSettings settings = new XmlReaderSettings();
+                //add in settings needed for loading if there ends up being any
+                XmlReader reader = XmlReader.Create(location, settings);
+
+                List<MyPoint> quadPoints = new List<MyPoint>();
+
+
+                while (reader.Read())
                 {
-                    xr.MoveToContent();
-                    int count = doc.Descendants().Count(); 
-                    //for(int i = 0; i < count; i++){ }
-                    
+                    switch (reader.Name)
+                    {
+                        case "Quesar.QuadTree":
+                            for(int i = 0; i < reader.AttributeCount; i++)
+                            {
+                                MyPoint temp = new MyPoint();
 
-
+                            }
+                            break;
+                    }
                 }
-                //will have to test arround with maps and see ultimately how well this works
-                return ret;
+                
+                
 
+
+                
+
+
+                return ret;
             }
 
 
@@ -262,12 +278,278 @@ namespace Quesar
 
             }
             
-            public void saveMap(Map map, string name)
+            //the save map name should be the most recent with updated #'s, the only time save map is used here 
+            public void saveMap(Map data, string name,bool overwrite)
             {
+                string location = ID.getPath(ID.getNum("Map"));
+                
+                //true here will set the map to overwrite one with the same save name,
+                if (overwrite)
+                {
+                    
+
+                    XmlWriterSettings settings = new XmlWriterSettings();
+                    settings.Indent = true;
+                    settings.IndentChars = "\t";
+                    XmlWriter writer = XmlWriter.Create(location, settings);
+
+
+                    writer.WriteStartDocument();
+                    writer.WriteStartElement(data.saveName);
+
+                    //gives a date stamp on file of last saved
+                    writer.WriteStartElement("Date");
+                    writer.WriteValue(DateTime.Now.ToString());
+                    writer.WriteEndElement();
+                    //gives saved location name to get sprite sheets
+                    writer.WriteStartElement("EnviornmentSheetName");
+                    writer.WriteValue(data.enviormentSheetLocation);
+                    writer.WriteEndElement();
+
+                    //boundary data all maps must have one
+                    writer.WriteStartElement("Boundary");
+                    writer.WriteStartElement("X");
+                    writer.WriteValue(data.boundary.X);
+                    writer.WriteEndElement();
+                    writer.WriteStartElement("Y");
+                    writer.WriteValue(data.boundary.Y);
+                    writer.WriteEndElement();
+                    writer.WriteStartElement("Width");
+                    writer.WriteValue(data.boundary.Width);
+                    writer.WriteEndElement();
+                    writer.WriteStartElement("Height");
+                    writer.WriteValue(data.boundary.Height);
+                    writer.WriteEndElement();
+                    writer.WriteEndElement();
+
+
+                    //first we want to go through the quadtree of points and write each's id & position
+                    int qtcount = data.worldObjects.getCount();
+                    writer.WriteStartElement(data.worldObjects.ToString());
+                    if (qtcount > 0)
+                    {
+
+                        List<MyPoint> allPoints = data.worldObjects.gatherAll();
+
+                        for (int i = 0; i < qtcount; i++)
+                        {
+                            writer.WriteStartElement("MyPoint");
+
+                            writer.WriteStartElement("X");
+                            writer.WriteValue(allPoints[i].X);
+                            writer.WriteEndElement();
+
+                            writer.WriteStartElement("Y");
+                            writer.WriteValue(allPoints[i].Y);
+                            writer.WriteEndElement();
+
+                            writer.WriteStartElement("ID");
+                            writer.WriteValue(allPoints[i].id);
+                            writer.WriteEndElement();
+
+                            writer.WriteEndElement();
+                        }
+
+                    }
+                    //next we will go through each trace that exists
+                    if (!(data.worldObjects.traces is null))
+                    {
+                        int traceCount = data.worldObjects.traces.Count;
+                        if (traceCount > 0)
+                        {
+                            for (int i = 0; i < traceCount; i++)
+                            {
+                                writer.WriteStartElement("Trace");
+                                List<string> ids = data.worldObjects.traces[i].getIds();
+                                for (int j = 0; j < ids.Count; j++)
+                                {
+                                    writer.WriteStartElement("Id");
+                                    writer.WriteValue(ids[j]);
+                                    writer.WriteEndElement();
+                                }
+
+                                writer.WriteEndElement();
+                            }
+                        }
+                    }
+                    writer.WriteEndElement();
+
+                    //now the map has saved all of its quadtree needed, will be able to pull out and make the quadtree from x,y, and id points after awhile
+                    //next we will record all the mapElements in each map by type and id, for refrence, might need to track more later
+                    if (!(data.mapElements is null))
+                    {
+                        int objCount = data.mapElements.Count;
+                        if (objCount > 0)
+                        {
+                            writer.WriteStartElement("MapElement");
+                            for (int q = 0; q < objCount; q++)
+                            {
+                                writer.WriteStartElement("Id");
+                                writer.WriteValue(data.mapElements[q].id);
+                                writer.WriteEndElement();
+
+                                writer.WriteStartElement("Type");
+                                writer.WriteValue(data.mapElements[q].type);
+                                writer.WriteEndElement();
+                            }
+                            writer.WriteEndElement();
+                        }
+                    }
+
+
+
+
+                    writer.WriteEndElement();
+                    writer.WriteEndDocument();
+                    writer.Close();
+                }
+                //if its false then it will do the same saving sequence, but add a #
+                //havent written all of the logic to go though, so this is under the intention that a map being saved more than once is already being loaded and therefore will retain mark of newness "#"
+                else
+                {
+                    if (File.Exists(location))
+                    {
+                        location += "#";
+                    }
+
+                    XmlWriterSettings settings = new XmlWriterSettings();
+                    settings.Indent = true;
+                    settings.IndentChars = "\t";
+                    XmlWriter writer = XmlWriter.Create(location, settings);
+
+
+                    writer.WriteStartDocument();
+                    writer.WriteStartElement(data.saveName);
+
+                    //gives a date stamp on file of last saved
+                    writer.WriteStartElement("Date");
+                    writer.WriteValue(DateTime.Now.ToString());
+                    writer.WriteEndElement();
+                    //gives saved location name to get sprite sheets
+                    writer.WriteStartElement("EnviornmentSheetName");
+                    writer.WriteValue(data.enviormentSheetLocation);
+                    writer.WriteEndElement();
+
+                    //boundary data all maps must have one
+                    writer.WriteStartElement("Boundary");
+                    writer.WriteStartElement("X");
+                    writer.WriteValue(data.boundary.X);
+                    writer.WriteEndElement();
+                    writer.WriteStartElement("Y");
+                    writer.WriteValue(data.boundary.Y);
+                    writer.WriteEndElement();
+                    writer.WriteStartElement("Width");
+                    writer.WriteValue(data.boundary.Width);
+                    writer.WriteEndElement();
+                    writer.WriteStartElement("Height");
+                    writer.WriteValue(data.boundary.Height);
+                    writer.WriteEndElement();
+                    writer.WriteEndElement();
+
+
+                    //first we want to go through the quadtree of points and write each's id & position
+                    int qtcount = data.worldObjects.getCount();
+                    writer.WriteStartElement(data.worldObjects.ToString());
+                    if (qtcount > 0)
+                    {
+
+                        List<MyPoint> allPoints = data.worldObjects.gatherAll();
+
+                        for (int i = 0; i < qtcount; i++)
+                        {
+                            writer.WriteStartElement("MyPoint");
+
+                            writer.WriteStartElement("X");
+                            writer.WriteValue(allPoints[i].X);
+                            writer.WriteEndElement();
+
+                            writer.WriteStartElement("Y");
+                            writer.WriteValue(allPoints[i].Y);
+                            writer.WriteEndElement();
+
+                            writer.WriteStartElement("ID");
+                            writer.WriteValue(allPoints[i].id);
+                            writer.WriteEndElement();
+
+                            writer.WriteEndElement();
+                        }
+
+                    }
+                    //next we will go through each trace that exists
+                    if (!(data.worldObjects.traces is null))
+                    {
+                        int traceCount = data.worldObjects.traces.Count;
+                        if (traceCount > 0)
+                        {
+                            for (int i = 0; i < traceCount; i++)
+                            {
+                                writer.WriteStartElement("Trace");
+                                List<string> ids = data.worldObjects.traces[i].getIds();
+                                for (int j = 0; j < ids.Count; j++)
+                                {
+                                    writer.WriteStartElement("Id");
+                                    writer.WriteValue(ids[j]);
+                                    writer.WriteEndElement();
+                                }
+
+                                writer.WriteEndElement();
+                            }
+                        }
+                    }
+                    writer.WriteEndElement();
+
+                    //now the map has saved all of its quadtree needed, will be able to pull out and make the quadtree from x,y, and id points after awhile
+                    //next we will record all the mapElements in each map by type and id, for refrence, might need to track more later
+                    if (!(data.mapElements is null))
+                    {
+                        int objCount = data.mapElements.Count;
+                        if (objCount > 0)
+                        {
+                            writer.WriteStartElement("MapElement");
+                            for (int q = 0; q < objCount; q++)
+                            {
+                                writer.WriteStartElement("Id");
+                                writer.WriteValue(data.mapElements[q].id);
+                                writer.WriteEndElement();
+
+                                writer.WriteStartElement("Type");
+                                writer.WriteValue(data.mapElements[q].type);
+                                writer.WriteEndElement();
+                            }
+                            writer.WriteEndElement();
+                        }
+                    }
+
+
+
+
+                    writer.WriteEndElement();
+                    writer.WriteEndDocument();
+                    writer.Close();
+                }
+
 
             }
 
+            public int getAbsolute(string path)
+            {
+                int a = 0;
+                for(int i = 0; i < typeIndex.Count; i++)
+                {
+                    if(KeyPath[a + i] == path)
+                    {
+                        a += i;
+                        break;
+                    }
+                    else
+                    {
+                        a = typeIndex[i];
+                    }
+                }
 
+
+                return a;
+            }
         }
 
         //only 1 of these should exist across game ever
@@ -530,10 +812,37 @@ namespace Quesar
 
 
             //get number path will return a list of ints that are the positions in order to reach a folder
-            private string getPath(int x)
+            public string getPath(int x)
             {
-                string ret = "";
+                string ret = globalPath;
+                if (x != 0)
+                {
+                    if (depth[x] == 1)
+                    {
+                        ret = ret + @"\" + layers[x];
+                    }
+                    else
+                    {
+                        //so here we want to go up the list starting from x and basically we will go down to each closest -1 level of depth
+                        int index = x;
+                        //index tracks the position of each time we need to step back
+                        while (depth[index] >= 1)
+                        {
+                            for (int i = index; i > 0; i--)
+                            {
+                                if (depth[i] == depth[index] - 1)
+                                {
+                                    index = i;
+                                    ret = ret.Insert(globalPath.Length, @"\" + layers[i]);
+                                    break;
+                                }
 
+                            }
+                        }
+
+                    }
+
+                }
                 return ret;
             }
             private List<int> getNumPath(int x)
@@ -553,7 +862,7 @@ namespace Quesar
                         //so here we want to go up the list starting from x and basically we will go down to each closest -1 level of depth
                         int index = x;
                         //index tracks the position of each time we need to step back
-                        while(depth[index] > 1)
+                        while(depth[index] >= 1)
                         {
                             for(int i = index; i > 0; i--)
                             {
@@ -566,6 +875,7 @@ namespace Quesar
 
                             }
                         }
+
                     }
                     
                 }
@@ -577,7 +887,7 @@ namespace Quesar
 
                 return a;
             }
-            private int getNum(string path)
+            public int getNum(string path)
             {
                 int ret = 0;
                 for (int i = 0; i < layers.Count ;i++)
@@ -600,6 +910,5 @@ namespace Quesar
     }
     
 
-    //data is going to be the actual 
 
 }
