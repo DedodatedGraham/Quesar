@@ -241,14 +241,13 @@ namespace Quesar
 
                 while (reader.Read())
                 {
-                    switch (reader.Name)
+                    switch (reader.Name.ToString())
                     {
                         case "Quesar.QuadTree":
-                            for(int i = 0; i < reader.AttributeCount; i++)
-                            {
-                                MyPoint temp = new MyPoint();
+                            MyPoint temp = new MyPoint();
+                            Debug.WriteLine(reader.ReadElementContentAsString());
 
-                            }
+                            temp.X = 0;
                             break;
                     }
                 }
