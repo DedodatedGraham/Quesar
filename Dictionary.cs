@@ -100,7 +100,6 @@ namespace Quesar
 
                 //then it will produce all objects
                 Create(c);
-
             
 
 
@@ -179,10 +178,13 @@ namespace Quesar
                         indx++;
                     }
                 }
-                if(KeyPath.Count == 1 && typeIndex.Count == 0)
+                
+                if(KeyPath.Count != 0 && typeIndex.Count == 0)
                 {
-                    typeIndex.Add(1);
+                    typeIndex.Add(KeyPath.Count);
                 }
+
+                ;
 
 
 
@@ -201,7 +203,8 @@ namespace Quesar
                             case "Map":
                                 loadedMaps.Add(loadMap(index + j));
                                 //this will grab the texture sheet for enviorment objects that is there.
-                                loadedMaps[index + j].setSprite(loadTexture(c,loadedMaps[index+j].sheetName));
+                                //skip texture loading for now while i work on actual maps
+                                //loadedMaps[index + j].setSprite(loadTexture(c,loadedMaps[index+j].sheetName));
                                 break;
                             
 
@@ -238,16 +241,22 @@ namespace Quesar
 
                 List<MyPoint> quadPoints = new List<MyPoint>();
 
-
+                reader.Read();
                 while (reader.Read())
                 {
+                    reader.MoveToContent();
                     switch (reader.Name.ToString())
                     {
                         case "Quesar.QuadTree":
-                            MyPoint temp = new MyPoint();
-                            Debug.WriteLine(reader.ReadElementContentAsString());
-
-                            temp.X = 0;
+                            
+                            for(int i = 0; i < reader.AttributeCount;i++)
+                            {
+                                MyPoint temp = new MyPoint();
+                                temp.X = reader.ReadContentAsInt();
+                                temp.Y = reader.ReadContentAsInt();
+                                temp.id = reader.ReadContentAsString();
+                                quadPoints.Add(temp);
+                            }
                             break;
                     }
                 }
@@ -780,18 +789,24 @@ namespace Quesar
            
             public int getFileCount(string path)
             {
+
                 string tempFinder = globalPath;
                 List<int> numPath = getNumPath(getNum(path));
 
-                for (int j = 0; j < numPath.Count; j++)
+                if(path == "MapElement")
                 {
-                    if(j != 0)
-                    {
-                        tempFinder = tempFinder + @"\" + layers[numPath[j]];
-                    }
-                   
+                    ;
                 }
+                for (int j = 1; j < numPath.Count; j++)
+                {
 
+                    tempFinder = tempFinder + @"\" + layers[numPath[j]];
+
+
+                        
+                    
+                }
+                
                 return Directory.GetFiles(tempFinder).Length;
 
             }
@@ -849,34 +864,45 @@ namespace Quesar
                 //here x represents the location of the string according to the key
                 //what this will do is send out a list of ints that are the path to the file being looked at
                 List<int> a = new List<int>();
-                a.Add(0);
                 if (x != 0)
                 {
                     if(depth[x] == 1)
                     {
+
+                        a.Add(0);
                         a.Add(x);
                     }
                     else
                     {
+
+                        a.Add(0);
                         //so here we want to go up the list starting from x and basically we will go down to each closest -1 level of depth
                         int index = x;
                         //index tracks the position of each time we need to step back
-                        while(depth[index] >= 1)
-                        {
-                            for(int i = index; i > 0; i--)
+                        a.Add(x);
+                            for(int i = index; depth[index] > 1; )
                             {
                                 if(depth[i] == depth[index] - 1)
                                 {
                                     index = i;
                                     a.Insert(1,index);
-                                    break;
+                                    i--;
+                                }
+                                else
+                                {
+                                    i--;
                                 }
 
                             }
-                        }
+                        
 
                     }
                     
+                }
+                else
+                {
+
+                    a.Add(0);
                 }
                 
                 
@@ -891,7 +917,7 @@ namespace Quesar
                 int ret = 0;
                 for (int i = 0; i < layers.Count ;i++)
                 {
-                    if( path == layers[i])
+                    if( path.Equals(layers[i]))
                     {
                         ret = i;
                         break;
