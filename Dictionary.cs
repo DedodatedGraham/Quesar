@@ -233,38 +233,14 @@ namespace Quesar
                 location += @"\" + Key[getAbsolute("Map") + x];
 
                 Map ret = new Map();
+                string _byteOrderMarkUtf8 = Encoding.UTF8.GetString(Encoding.UTF8.GetPreamble()); 
+
+               
 
 
-                XmlReaderSettings settings = new XmlReaderSettings();
-                //add in settings needed for loading if there ends up being any
-                XmlReader reader = XmlReader.Create(location, settings);
-
-                List<MyPoint> quadPoints = new List<MyPoint>();
-
-                reader.Read();
-                while (reader.Read())
-                {
-                    reader.MoveToContent();
-                    switch (reader.Name.ToString())
-                    {
-                        case "Quesar.QuadTree":
-                            
-                            for(int i = 0; i < reader.AttributeCount;i++)
-                            {
-                                MyPoint temp = new MyPoint();
-                                temp.X = reader.ReadContentAsInt();
-                                temp.Y = reader.ReadContentAsInt();
-                                temp.id = reader.ReadContentAsString();
-                                quadPoints.Add(temp);
-                            }
-                            break;
-                    }
-                }
-                
-                
 
 
-                
+
 
 
                 return ret;

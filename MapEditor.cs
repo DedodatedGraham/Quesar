@@ -67,16 +67,16 @@ namespace Quesar
             curentMesh = false;
 
             //UiElements for the actual Base tools for the map editor
-            tools = new UiElement[3];
+            tools = new UiElement[4];
             tools[0] = new Button(gd, 0, gdm.PreferredBackBufferHeight - 2 * btn1.Height, btn1.Width, btn1.Height, "Load Map", btn1, false);
             tools[1] = new Button(gd, btn1.Width, gdm.PreferredBackBufferHeight - 2 * btn1.Height, btn1.Width, btn1.Height, "Save Map", btn1, false);
             tools[2] = new ToggleButton(gd, btn1.Width * 2, gdm.PreferredBackBufferHeight - 2 * btn1.Height, btn1.Width, btn1.Height, "Mesh", btn1, false);
-
+            tools[3] = new ToggleButton(gd,btn1.Width * 3, gdm.PreferredBackBufferHeight - 2 * btn1.Height,btn1.Width,btn1.Height,"Toggle Trace",btn1,false);
             
             
 
             currentMap = new Map(c);
-
+            
             ToolsOn();
         }
 
